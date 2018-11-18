@@ -118,7 +118,9 @@ public class CartesianProductMappingCollectorTest {
                 CartesianProductMappingCollectorTest::toOneToMany,
                 CartesianProductMappingCollectorTest::toPartialOneToMany,
                 OneToMany::fold,
-                OneToMany::foldPartial
+                OneToMany::foldPartial,
+                CartesianProduct::getL,
+                CartesianProduct::getR
             ));
 
         assertThat(oneToManies, hasItems(
