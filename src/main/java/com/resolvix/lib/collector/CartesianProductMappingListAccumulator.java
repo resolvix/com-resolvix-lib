@@ -7,6 +7,26 @@ import java.util.Map;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 
+/**
+ * An accumulator designed to map a value of type {@code T},
+ * comprising a repeating component and a non-repeating
+ * component, to a value of type {@code I} that represents
+ * a maplet from a single instance of the repeating component
+ * to the list non-repeating components; where the index for
+ * the repeating component is of type {@code II}.
+ *
+ * @param <T> the type of value comprising both the repeating
+ *           component, and the non-repeating component
+ *
+ * @param <I> the type of value representing the maplet of the
+ *           repeating component, to the non-repeating
+ *           component
+ *
+ * @param <II> the type of the index for the repeating
+ *            component for the purposes of linking the
+ *            non-repeatable components to the singular
+ *            repeating component
+ */
 public class CartesianProductMappingListAccumulator<T, I, II> {
 
     private Function<T, I> mappingFunction;
