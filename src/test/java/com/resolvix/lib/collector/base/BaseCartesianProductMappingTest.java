@@ -87,6 +87,10 @@ public abstract class BaseCartesianProductMappingTest {
         public List<R> getListR() { return listR; }
     }
 
+    protected static <L, R> OneToMany<L, R> toOneToMany(L l, R r) {
+        return new OneToMany<L, R>(l, r);
+    }
+
     protected static <L, R> OneToMany<L, R> toOneToMany(CartesianProduct<L, R> cartesianProduct) {
         return new OneToMany<L, R>(
                 cartesianProduct.getL(),
