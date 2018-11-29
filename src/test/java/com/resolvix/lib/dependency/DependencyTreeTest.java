@@ -2,6 +2,7 @@ package com.resolvix.lib.dependency;
 
 import org.hamcrest.Matchers;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -61,6 +62,7 @@ public class DependencyTreeTest {
 
     }
 
+    @Ignore
     @Test
     public void acceptanceTest() {
 
@@ -74,5 +76,4 @@ public class DependencyTreeTest {
                         sameInstance(objectD), sameInstance(objectF), sameInstance(objectE),
                         sameInstance(objectA), sameInstance(objectB), sameInstance(objectC)));
     }
-
 }
