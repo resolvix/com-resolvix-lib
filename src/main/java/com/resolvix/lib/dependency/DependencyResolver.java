@@ -11,11 +11,11 @@ public class DependencyResolver {
 
     protected static final String INVALID_DEPENDENCY_REFERENCE = "Invalid dependency reference";
 
-    static <K, T> ObjRef<K, T> toObjRef(
+    static <K, T> ObjectReference<K, T> toObjRef(
         T t,
         Function<T, K> identifier,
         Function<T, K[]> dependencies) {
-        ObjRef<K, T> objRef = new ObjRef<>(
+        ObjectReference<K, T> objRef = new ObjectReference<>(
             identifier.apply(t), t);
 
         K[] ks = dependencies.apply(t);
@@ -26,15 +26,23 @@ public class DependencyResolver {
     }
 
     static <K, T> Map<K, Integer> traceDependencies(
-            Map<K, ObjRef<K, T>> objRefMap, K k, Integer level) {
-        ObjRef<K, T> objRef = objRefMap.get(k);
+        Deque<K> stack, Map<K, ObjectReference<K, T>> map, K k, Integer level) {
+        ObjectReference<K, T> objRef = map.get(k);
+        if (objRef == null)
+            throw new IllegalStateException("dependency not found");
+
         Map<K, Integer> dependencies = new HashMap<>();
         Set<K> directDependencies = objRef.getDependencies(0);
         directDependencies.forEach(
                 (K dk) -> {
+                    if (stack.contains(dk))
+                        throw new IllegalStateException("cyclic dependency identified");
+
                     dependencies.put(dk, level);
+                    stack.push(dk);
                     dependencies.putAll(
-                        traceDependencies(objRefMap, dk, level + 1));
+                        traceDependencies(stack, map, dk, level + 1));
+                    stack.pop();
                 });
         return dependencies;
     }
@@ -45,25 +53,28 @@ public class DependencyResolver {
             Function<T, K[]> directDependencies,
             T... ts) {
 
-        List<ObjRef<K, T>> lts = Arrays.stream(ts)
+        List<ObjectReference<K, T>> lts = Arrays.stream(ts)
                 .map((T t) -> toObjRef(t, identifier, directDependencies))
                 .collect(Collectors.toList());
 
-        Map<K, ObjRef<K, T>> map = Maps.uniqueIndex(lts, ObjRef::getK);
+        Map<K, ObjectReference<K, T>> map = Maps.uniqueIndex(lts, ObjectReference::getK);
+        Deque<K> stack = new ArrayDeque<K>();
 
         map.forEach(
-                (K k, ObjRef<K, T> objRef) -> {
-                    traceDependencies(map, k, 0)
+                (K k, ObjectReference<K, T> objRef) -> {
+                    stack.push(k);
+                    traceDependencies(stack, map, k, 0)
                         .forEach((K dk, Integer l) -> {
                             objRef.addDependency(dk, l);
                         });
+                    stack.pop();
                 });
 
         lts.sort(
-                new Comparator<ObjRef<K, T>>() {
+                new Comparator<ObjectReference<K, T>>() {
 
                     @Override
-                    public int compare(ObjRef<K, T> o1, ObjRef<K, T> o2) {
+                    public int compare(ObjectReference<K, T> o1, ObjectReference<K, T> o2) {
                         return o1.compareTo(o2);
                     }
                 });
@@ -71,7 +82,7 @@ public class DependencyResolver {
         T[] tsout = (T[]) Array.newInstance(classT, lts.size());
 
         List<T> ltsOut = lts.stream()
-                .map(ObjRef::getT)
+                .map(ObjectReference::getT)
                 .collect(Collectors.toList());
 
         return ltsOut.toArray(tsout);

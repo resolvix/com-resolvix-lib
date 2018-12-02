@@ -1,21 +1,18 @@
 package com.resolvix.lib.dependency;
 
-import javafx.beans.DefaultProperty;
-
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-class ObjRef<K, T>
-    implements Comparable<ObjRef<K, T>>
+class ObjectReference<K, T>
+    implements Comparable<ObjectReference<K, T>>
 {
-    K k;
+    private K k;
 
-    T t;
+    private T t;
 
     Map<K, Integer> dependencies;
 
-    public ObjRef(
+    public ObjectReference(
         K k,
         T t
     ) {
@@ -30,37 +27,9 @@ class ObjRef<K, T>
 
     public void addDependency(
         K k, int level) {
-        dependencies.putIfAbsent(k, level);
-    }
-
-    @Deprecated
-    public void addDependencies(
-            Stream<K> streamK,
-            int level) {
-        streamK.forEach((K k) -> addDependency(k, level));
-    }
-
-    @Deprecated
-    public void addDependencies(
-            K[] ks,
-            int level) {
-        addDependencies(
-                Arrays.stream(ks),
-                level);
-    }
-
-    @Deprecated
-    public void addDependencies(
-            Collection<K> collectionK,
-            int level) {
-        addDependencies(
-                collectionK.stream(),
-                level);
-    }
-
-    @Deprecated
-    public Set<K> getDependencies() {
-        return dependencies.keySet();
+        Integer l = dependencies.get(k);
+        if (l == null || l > level)
+            dependencies.put(k, level);
     }
 
     Set<K> getDependencies(int level) {
@@ -76,7 +45,7 @@ class ObjRef<K, T>
     }
 
     @Override
-    public int compareTo(ObjRef<K, T> o) {
+    public int compareTo(ObjectReference<K, T> o) {
 
         boolean isDependedUpon = o.isDependentUpon(k);
         boolean isDependentOn = isDependentUpon(o.k);
