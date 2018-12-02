@@ -62,7 +62,6 @@ public class DependencyTreeTest {
 
     }
 
-    @Ignore
     @Test
     public void acceptanceTest() {
 

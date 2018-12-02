@@ -23,38 +23,67 @@ public class DependencyResolver {
         T t,
         Function<T, K> identifier,
         Function<T, K[]> dependencies) {
-        ObjRef<K, T> objRef = new ObjRef<>(
+        ObjRef<K, T> objRef = new ObjRef<K, T>(
             identifier.apply(t),
-            dependencies.apply(t),
             t
         );
+        objRef.addDependencies(
+                dependencies.apply(t), 0);
+
         return objRef;
+    }
+
+    public static <K, T> Set<K> calculateDependencies(
+            Map<K, ObjRef<K, T>> objRefMap,
+            K k
+    ) {
+        ObjRef<K, T> objRef = objRefMap.get(k);
+        Set<K> allDependencies = new HashSet<>();
+        Set<K> directDependencies = objRef.getDependencies();
+        directDependencies.forEach(
+                (K kx) -> {
+                    allDependencies.add(kx);
+                    Set<K> indirectDependencies
+                            = calculateDependencies(objRefMap, kx);
+                    allDependencies.addAll(indirectDependencies);
+                });
+        return allDependencies;
     }
 
     public static <T, K> T[] calculateDependencies(
             Class<T> classT,
             Function<T, K> identifier,
-            Function<T, K[]> dependencies,
+            Function<T, K[]> directDependencies,
             T... ts) {
 
         List<ObjRef<K, T>> lts = Arrays.stream(ts)
-                .map((T t) -> toObjRef(t, identifier, dependencies))
+                .map((T t) -> toObjRef(t, identifier, directDependencies))
                 .collect(Collectors.toList());
 
         Map<K, ObjRef<K, T>> map = Maps.uniqueIndex(lts, ObjRef::getK);
 
         map.forEach(
                 (K k, ObjRef<K, T> objRef) -> {
-                    K[] deps = objRef.deps;
-                    Arrays.stream(deps).forEach((K kx) -> {
-                        ObjRef<K, T> depObjRef = map.get(kx);
-                        if (depObjRef == null)
-                            throw new IllegalStateException(INVALID_DEPENDENCY_REFERENCE);
-                        //objRef.dependencies.add(depObjRef);
-                        //depObjRef.dependents.add(objRef);
-                    });
+                    Set<K> indirectDependencies = calculateDependencies(
+                            map, k);
+                    objRef.addDependencies(indirectDependencies, 0);
                 });
 
-        return (T[]) Array.newInstance(classT, 10);
+        lts.sort(
+                new Comparator<ObjRef<K, T>>() {
+
+                    @Override
+                    public int compare(ObjRef<K, T> o1, ObjRef<K, T> o2) {
+                        return o1.compareTo(o2);
+                    }
+                });
+
+        T[] tsout = (T[]) Array.newInstance(classT, lts.size());
+
+        List<T> ltsOut = lts.stream()
+                .map(ObjRef::getT)
+                .collect(Collectors.toList());
+
+        return ltsOut.toArray(tsout);
     }
 }

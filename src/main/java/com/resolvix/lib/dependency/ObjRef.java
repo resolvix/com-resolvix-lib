@@ -1,43 +1,81 @@
 package com.resolvix.lib.dependency;
 
 import com.google.common.base.Function;
+import javafx.collections.transformation.SortedList;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Stream;
 
 class ObjRef<K, T>
     implements Comparable<ObjRef<K, T>>
 {
+    private static class DependencyMaplet<K> {
+        K k;
+
+        int level;
+
+        DependencyMaplet(K k, int level) {
+            this.k = k;
+            this.level = level;
+        }
+    }
 
     K k;
 
-    K[] deps;
-
     T t;
+
+    Map<K, DependencyMaplet<K>> dependencies;
 
     public ObjRef(
         K k,
-        K[] deps,
         T t
     ) {
         this.k = k;
-        this.deps = deps;
-        Arrays.sort(this.deps);
         this.t = t;
+        this.dependencies = new HashMap<>();
     }
 
+    public K getK() { return k; }
 
+    public T getT() { return t; }
 
-    public K getK() {
-                  return k;
-                           }
+    public void addDependencies(
+            Stream<K> streamK,
+            int level) {
+        streamK.map((K k) -> new DependencyMaplet<>(k, level))
+                .forEach((DependencyMaplet<K> dependencyMaplet) ->
+                        dependencies.putIfAbsent(dependencyMaplet.k, dependencyMaplet));
+    }
+
+    public void addDependencies(
+            K[] ks,
+            int level) {
+        addDependencies(
+                Arrays.stream(ks),
+                level);
+    }
+
+    public void addDependencies(
+            Collection<K> collectionK,
+            int level) {
+        addDependencies(
+                collectionK.stream(),
+                level);
+    }
+
+    public Set<K> getDependencies() {
+        return dependencies.keySet();
+    }
+
+    private boolean isDependentUpon(K k) {
+        return dependencies.containsKey(k);
+    }
 
     @Override
     public int compareTo(ObjRef<K, T> o) {
 
-        boolean isDependedUpon = (Arrays.binarySearch(o.deps, k) >= 0);
-        boolean isDependentOn = (Arrays.binarySearch(deps, o.k) >= 0);
+        boolean isDependedUpon = o.isDependentUpon(k);
+        boolean isDependentOn = isDependentUpon(o.k);
 
         //
         //  Throw {@link IllegalStateException}, if both

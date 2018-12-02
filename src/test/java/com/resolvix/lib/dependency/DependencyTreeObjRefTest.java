@@ -11,19 +11,25 @@ import static org.hamcrest.Matchers.*;
 public class DependencyTreeObjRefTest
     extends DependencyResolver
 {
-    private ObjRef<String, String> objRefA = new ObjRef<String, String>("A", new String[] {""}, "ALPHA");
+    private static <K, T> ObjRef<K, T> toObjRef(K k, T t, K[] dependencies) {
+        ObjRef<K, T> objRef = new ObjRef<>(k, t);
+        objRef.addDependencies(dependencies, 0);
+        return objRef;
+    }
 
-    private ObjRef<String, String> objRefB = new ObjRef<String, String>("B", new String[] {""}, "BRAVO");
+    private ObjRef<String, String> objRefA = toObjRef("A", "ALPHA", new String[] {""});
 
-    private ObjRef<String, String> objRefC = new ObjRef<String, String>("C", new String[] {"A"}, "CHARLIE");
+    private ObjRef<String, String> objRefB = toObjRef("B", "BRAVO", new String[] {""});
 
-    private ObjRef<String, String> objRefD = new ObjRef<String, String>("D", new String[] {"B", "C"}, "DELTA");
+    private ObjRef<String, String> objRefC = toObjRef("C", "CHARLIE", new String[] {"A"});
 
-    private ObjRef<String, String> objRefE = new ObjRef<String, String>("E", new String[] {"C", "D"}, "ECHO");
+    private ObjRef<String, String> objRefD = toObjRef("D", "DELTA", new String[] {"B", "C"});
 
-    private ObjRef<String, String> objRefF = new ObjRef<String, String>("F", new String[] {"E", "G"}, "FOXTROT");
+    private ObjRef<String, String> objRefE = toObjRef("E", "ECHO", new String[] {"C", "D"});
 
-    private ObjRef<String, String> objRefG = new ObjRef<String, String>("G", new String[] {"F", "E"}, "GOLF");
+    private ObjRef<String, String> objRefF = toObjRef("F", "FOXTROT", new String[] {"E", "G"});
+
+    private ObjRef<String, String> objRefG = toObjRef("G", "GOLF", new String[] {"F", "E"});
 
     @Before
     public void before() {
