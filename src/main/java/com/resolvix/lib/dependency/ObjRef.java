@@ -1,30 +1,19 @@
 package com.resolvix.lib.dependency;
 
-import com.google.common.base.Function;
-import javafx.collections.transformation.SortedList;
+import javafx.beans.DefaultProperty;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 class ObjRef<K, T>
     implements Comparable<ObjRef<K, T>>
 {
-    private static class DependencyMaplet<K> {
-        K k;
-
-        int level;
-
-        DependencyMaplet(K k, int level) {
-            this.k = k;
-            this.level = level;
-        }
-    }
-
     K k;
 
     T t;
 
-    Map<K, DependencyMaplet<K>> dependencies;
+    Map<K, Integer> dependencies;
 
     public ObjRef(
         K k,
@@ -39,14 +28,19 @@ class ObjRef<K, T>
 
     public T getT() { return t; }
 
+    public void addDependency(
+        K k, int level) {
+        dependencies.putIfAbsent(k, level);
+    }
+
+    @Deprecated
     public void addDependencies(
             Stream<K> streamK,
             int level) {
-        streamK.map((K k) -> new DependencyMaplet<>(k, level))
-                .forEach((DependencyMaplet<K> dependencyMaplet) ->
-                        dependencies.putIfAbsent(dependencyMaplet.k, dependencyMaplet));
+        streamK.forEach((K k) -> addDependency(k, level));
     }
 
+    @Deprecated
     public void addDependencies(
             K[] ks,
             int level) {
@@ -55,6 +49,7 @@ class ObjRef<K, T>
                 level);
     }
 
+    @Deprecated
     public void addDependencies(
             Collection<K> collectionK,
             int level) {
@@ -63,8 +58,17 @@ class ObjRef<K, T>
                 level);
     }
 
+    @Deprecated
     public Set<K> getDependencies() {
         return dependencies.keySet();
+    }
+
+    Set<K> getDependencies(int level) {
+        return dependencies.entrySet()
+            .stream()
+            .filter((Map.Entry<K, Integer> e) -> (e.getValue() <= level))
+            .map((Map.Entry<K, Integer> e) -> e.getKey())
+            .collect(Collectors.toSet());
     }
 
     private boolean isDependentUpon(K k) {
