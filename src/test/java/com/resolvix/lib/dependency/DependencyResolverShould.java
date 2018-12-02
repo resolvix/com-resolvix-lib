@@ -1,18 +1,19 @@
 package com.resolvix.lib.dependency;
 
+import com.resolvix.lib.dependency.api.CyclicDependencyException;
+import com.resolvix.lib.dependency.api.DependencyNotFoundException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import static com.resolvix.lib.dependency.DependencyResolver.resolveDependencies;
-import static com.resolvix.lib.dependency.DependencyResolver.traceDependencies;
 import static org.hamcrest.Matchers.arrayContaining;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
 
-public class DependencyTreeShould {
+public class DependencyResolverShould {
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -65,8 +66,9 @@ public class DependencyTreeShould {
     }
 
     @Test
-    public void resolveDependencies_should_correctly_resolve_well_formed_dependencies() {
-
+    public void resolveDependencies_should_correctly_resolve_well_formed_dependencies()
+        throws CyclicDependencyException, DependencyNotFoundException
+    {
         SampleObject[] dependencies = resolveDependencies(
             SampleObject.class,
             SampleObject::getName,
@@ -74,13 +76,15 @@ public class DependencyTreeShould {
             objectA, objectB, objectC, objectD, objectE, objectF);
 
         assertThat(dependencies, arrayContaining(
-                        sameInstance(objectD), sameInstance(objectF), sameInstance(objectE),
-                        sameInstance(objectA), sameInstance(objectB), sameInstance(objectC)));
+            sameInstance(objectD), sameInstance(objectF), sameInstance(objectE),
+            sameInstance(objectA), sameInstance(objectB), sameInstance(objectC)));
     }
 
     @Test
-    public void resolveDependencies_cannot_resolve_interdependencies() {
-        thrown.expect(IllegalStateException.class);
+    public void resolveDependencies_cannot_resolve_interdependencies()
+        throws CyclicDependencyException, DependencyNotFoundException
+    {
+        thrown.expect(CyclicDependencyException.class);
         SampleObject[] dependencies = resolveDependencies(
             SampleObject.class,
             SampleObject::getName,
@@ -89,8 +93,10 @@ public class DependencyTreeShould {
     }
 
     @Test
-    public void resolveDependencies_cannot_resolve_unprovided_dependencies() {
-        thrown.expect(IllegalStateException.class);
+    public void resolveDependencies_cannot_resolve_unprovided_dependencies()
+        throws CyclicDependencyException, DependencyNotFoundException
+    {
+        thrown.expect(DependencyNotFoundException.class);
         SampleObject[] dependencies = resolveDependencies(
             SampleObject.class,
             SampleObject::getName,
