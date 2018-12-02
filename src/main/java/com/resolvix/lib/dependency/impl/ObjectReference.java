@@ -1,4 +1,4 @@
-package com.resolvix.lib.dependency;
+package com.resolvix.lib.dependency.impl;
 
 import java.util.*;
 import java.util.stream.Collectors;

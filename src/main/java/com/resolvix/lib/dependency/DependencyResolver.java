@@ -1,120 +1,130 @@
 package com.resolvix.lib.dependency;
 
 import com.google.common.base.Function;
-import com.google.common.collect.Maps;
 import com.resolvix.lib.dependency.api.CyclicDependencyException;
 import com.resolvix.lib.dependency.api.DependencyNotFoundException;
+import com.resolvix.lib.dependency.impl.GenericDependencyResolver;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.lang.reflect.Array;
-import java.util.*;
+import java.lang.annotation.Annotation;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class DependencyResolver {
 
-    private static class ObjectReferenceComparator<K, T>
-        implements Comparator<ObjectReference<K, T>>
-    {
-        @Override
-        public int compare(ObjectReference<K, T> o1, ObjectReference<K, T> o2) {
-            return o1.compareTo(o2);
-        }
-    }
-
-    private static class LocalDependencyResolver<K, T> {
-
-        Map<K, ObjectReference<K, T>> map;
-
-        private Deque<K> stack;
-
-        private Map<K, Integer> traceDependencies(
-            ObjectReference<K, T> objRef,
-            Integer level
-        ) throws CyclicDependencyException,
-            DependencyNotFoundException
-        {
-            stack.push(objRef.getK());
-            Map<K, Integer> dependencies = new HashMap<>();
-            Set<K> directDependencies = objRef.getDependencies(0);
-            for (K dk : directDependencies) {
-                if (stack.contains(dk))
-                    throw new CyclicDependencyException(objRef.getK(), dk);
-
-                dependencies.put(dk, level);
-                stack.push(dk);
-                ObjectReference<K, T> depObjRef
-                    = map.get(dk);
-                if (depObjRef == null)
-                    throw new DependencyNotFoundException(objRef.getK(), dk);
-
-                dependencies.putAll(
-                    traceDependencies(depObjRef, level + 1));
-                stack.pop();
-            }
-            stack.pop();
-            return dependencies;
-        }
-
-        private void traceDependencies(
-            ObjectReference<K, T> objRef
-        ) throws CyclicDependencyException,
-            DependencyNotFoundException
-        {
-            traceDependencies(objRef, 0)
-                .forEach(objRef::addDependency);
-        }
-
-        private LocalDependencyResolver(
-            Map<K, ObjectReference<K, T>> map
-        ) {
-            this.map = map;
-            this.stack = new ArrayDeque<>();
-        }
-    }
-
-    private static <K, T> ObjectReference<K, T> toObjRef (
-        T t,
-        Function < T, K > getIdentifier,
-        Function < T, K[]> getDependencies
-    ) {
-        ObjectReference<K, T> objRef = new ObjectReference<>(
-            getIdentifier.apply(t), t);
-        K[] ks = getDependencies.apply(t);
-        Arrays.stream(ks)
-            .forEach((K k) -> objRef.addDependency(k, 0));
-        return objRef;
-    }
-
+    /**
+     * Given an array containing a list of objects, and operations on those
+     * objects to identify the object, and to identify the list of objects
+     * within that list upon which that object depends, this method will
+     * sort return an array of the same size containing the same list of
+     * objects sorted such that the objects appearing earlier in the list
+     * are not dependent upon any objects appearing later in the list.
+     *
+     * @param classT reference to the class of objects subject to
+     *  dependency resolution
+     *
+     * @param getIdentifier reference to a method that returns, for any
+     *  given object, a unique identifier for the object
+     *
+     * @param getDependencies reference to a method that returns, for
+     *  any given object, a list of dependencies for that object expressed
+     *  in terms of the unique identifiers
+     *
+     * @param ts an array containing the list of objects subject to dependency
+     *  resolution
+     *
+     * @param <T> the class of objects subject to dependency resolution
+     *
+     * @param <K> the class of identifiers relating to the objects subject
+     *  to dependency resolution
+     *
+     * @return an array of objects, in a dependency-resolved order.
+     *
+     * @throws CyclicDependencyException
+     *
+     * @throws DependencyNotFoundException
+     */
     public static <T, K> T[] resolveDependencies(
         Class<T> classT,
-        Function<T, K> identifier,
-        Function<T, K[]> directDependencies,
+        Function<T, K> getIdentifier,
+        Function<T, K[]> getDependencies,
+        T... ts
+    ) throws CyclicDependencyException,
+        DependencyNotFoundException {
+        return GenericDependencyResolver.resolveDependencies(
+            classT, getIdentifier, getDependencies, ts);
+    }
+
+    @Deprecated
+    private static <T extends Class<?>> String[] toCanonicalNameList(T[] ts) {
+        String[] ss = new String[ts.length];
+        return Arrays.stream(ts)
+            .map(Class::getCanonicalName)
+            .collect(Collectors.toList())
+            .toArray(ss);
+    }
+
+    private static <T extends Class<?>> Stream<T> toStream(T[] ts) {
+        return Arrays.stream(ts);
+    }
+
+    private static class GetDependenciesForClass<A extends Annotation, T extends Class<?>>
+        implements Function<T, String[]>
+    {
+        Class<A> classA;
+
+        Function<A, T[]> getDependencies;
+
+        GetDependenciesForClass(
+            Class<A> classA,
+            Function<A, T[]> getDependenciesFromAnnotation
+        ) {
+            this.classA = classA;
+            this.getDependencies = getDependencies;
+        }
+
+        @Override
+        public String[] apply(T t) {
+            A[] as = t.getAnnotationsByType(classA);
+            List<String> lss = Arrays.stream(as)
+                .map(getDependencies)
+                .flatMap(DependencyResolver::toStream)
+                .map(Class::getCanonicalName)
+                .collect(Collectors.toList());
+            String[] ss = new String[lss.size()];
+            return lss.toArray(ss);
+        }
+    }
+
+    /**
+     *
+     * @param classA
+     * @param ts
+     * @param <A>
+     * @param <T>
+     * @return
+     * @throws CyclicDependencyException
+     * @throws DependencyNotFoundException
+     */
+    public static <A extends Annotation, T extends Class<?>> T[] resolveDependencies(
+        Class<Annotation> classA,
+        Function<Annotation, T[]> getDependencies,
         T... ts
     ) throws CyclicDependencyException,
         DependencyNotFoundException
     {
+        GetDependenciesForClass<Annotation, T> xat
+            = new GetDependenciesForClass<>(Annotation.class, getDependencies);
 
-        List<ObjectReference<K, T>> objectReferences = Arrays.stream(ts)
-            .map((T t) -> toObjRef(t, identifier, directDependencies))
-            .collect(Collectors.toList());
+//        return GenericDependencyResolver.resolveDependencies(
+//            Class.class,
+//            Class::getCanonicalName,
+//            xat,
+//            ts
+//        );
 
-        Map<K, ObjectReference<K, T>> map
-            = Maps.uniqueIndex(objectReferences, ObjectReference::getK);
-
-        LocalDependencyResolver<K, T> localDependencyResolver
-            = new LocalDependencyResolver<>(map);
-
-        for(Map.Entry<K, ObjectReference<K, T>> maplet : map.entrySet())
-            localDependencyResolver.traceDependencies(maplet.getValue());
-
-        objectReferences.sort(
-            new ObjectReferenceComparator<>());
-
-        T[] tsResult = (T[]) Array.newInstance(classT, ts.length);
-
-        List<T> listResult = objectReferences.stream()
-            .map(ObjectReference::getT)
-            .collect(Collectors.toList());
-
-        return listResult.toArray(tsResult);
+        return null;
     }
 }

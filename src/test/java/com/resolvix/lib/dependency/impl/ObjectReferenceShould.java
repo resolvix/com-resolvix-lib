@@ -1,4 +1,4 @@
-package com.resolvix.lib.dependency;
+package com.resolvix.lib.dependency.impl;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -9,7 +9,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 public class ObjectReferenceShould
-    extends DependencyResolver
+    extends GenericDependencyResolver
 {
     private static <K, T> ObjectReference<K, T> toObjectReference(K k, T t, K[] dependencies) {
         ObjectReference<K, T> objRef = new ObjectReference<>(k, t);
