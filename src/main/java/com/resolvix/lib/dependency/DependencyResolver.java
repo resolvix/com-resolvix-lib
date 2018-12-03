@@ -75,21 +75,21 @@ public class DependencyResolver {
     {
         Class<A> classA;
 
-        Function<A, T[]> getDependencies;
+        Function<A, T[]> getDependenciesFromAnnotation;
 
         GetDependenciesForClass(
             Class<A> classA,
             Function<A, T[]> getDependenciesFromAnnotation
         ) {
             this.classA = classA;
-            this.getDependencies = getDependencies;
+            this.getDependenciesFromAnnotation = getDependenciesFromAnnotation;
         }
 
         @Override
         public String[] apply(T t) {
             A[] as = t.getAnnotationsByType(classA);
             List<String> lss = Arrays.stream(as)
-                .map(getDependencies)
+                .map(getDependenciesFromAnnotation)
                 .flatMap(DependencyResolver::toStream)
                 .map(Class::getCanonicalName)
                 .collect(Collectors.toList());
@@ -109,19 +109,19 @@ public class DependencyResolver {
      * @throws DependencyNotFoundException
      */
     public static <A extends Annotation, T extends Class<?>> T[] resolveDependencies(
-        Class<Annotation> classA,
-        Function<Annotation, T[]> getDependencies,
+        Class<A> classA,
+        Function<A, T[]> getDependencies,
         T... ts
     ) throws CyclicDependencyException,
         DependencyNotFoundException
     {
-        GetDependenciesForClass<Annotation, T> xat
-            = new GetDependenciesForClass<>(Annotation.class, getDependencies);
+        GetDependenciesForClass<A, T> getDependenciesForClass
+            = new GetDependenciesForClass(classA, getDependencies);
 
 //        return GenericDependencyResolver.resolveDependencies(
 //            Class.class,
 //            Class::getCanonicalName,
-//            xat,
+//            getDependenciesForClass,
 //            ts
 //        );
 
