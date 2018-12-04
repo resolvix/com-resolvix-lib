@@ -1,14 +1,13 @@
 package com.resolvix.lib.dependency;
 
-import com.google.common.base.Function;
 import com.resolvix.lib.dependency.api.CyclicDependencyException;
 import com.resolvix.lib.dependency.api.DependencyNotFoundException;
 import com.resolvix.lib.dependency.impl.GenericDependencyResolver;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -70,14 +69,14 @@ public class DependencyResolver {
         return Arrays.stream(ts);
     }
 
-    private static class GetDependenciesForClass<A extends Annotation, T extends Class<?>>
+    private static class GetDependenciesForClassFromAnnotation<A extends Annotation, T extends Class<?>>
         implements Function<T, String[]>
     {
         Class<A> classA;
 
         Function<A, T[]> getDependenciesFromAnnotation;
 
-        GetDependenciesForClass(
+        GetDependenciesForClassFromAnnotation(
             Class<A> classA,
             Function<A, T[]> getDependenciesFromAnnotation
         ) {
@@ -87,10 +86,12 @@ public class DependencyResolver {
 
         @Override
         public String[] apply(T t) {
-            A[] as = t.getAnnotationsByType(classA);
-            List<String> lss = Arrays.stream(as)
-                .map(getDependenciesFromAnnotation)
-                .flatMap(DependencyResolver::toStream)
+            A a = t.getDeclaredAnnotation(classA);
+            if (a == null)
+                return new String[] {};
+                
+            T[] ts = getDependenciesFromAnnotation.apply(a);
+            List<String> lss = Arrays.stream(ts)
                 .map(Class::getCanonicalName)
                 .collect(Collectors.toList());
             String[] ss = new String[lss.size()];
@@ -110,21 +111,22 @@ public class DependencyResolver {
      */
     public static <A extends Annotation, T extends Class<?>> T[] resolveDependencies(
         Class<A> classA,
+        Class<T> classT,
         Function<A, T[]> getDependencies,
         T... ts
     ) throws CyclicDependencyException,
         DependencyNotFoundException
     {
-        GetDependenciesForClass<A, T> getDependenciesForClass
-            = new GetDependenciesForClass(classA, getDependencies);
+        Function<T, String> getCanonicalName
+            = Class::getCanonicalName;
 
-//        return GenericDependencyResolver.resolveDependencies(
-//            Class.class,
-//            Class::getCanonicalName,
-//            getDependenciesForClass,
-//            ts
-//        );
+        Function<T, String[]> getDependenciesForClassFromAnnotation
+            = new GetDependenciesForClassFromAnnotation<A, T>(classA, getDependencies);
 
-        return null;
+        return GenericDependencyResolver.resolveDependencies(
+            classT,
+            getCanonicalName,
+            getDependenciesForClassFromAnnotation,
+            ts);
     }
 }

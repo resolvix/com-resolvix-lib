@@ -1,12 +1,12 @@
 package com.resolvix.lib.dependency.impl;
 
-import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import com.resolvix.lib.dependency.api.CyclicDependencyException;
 import com.resolvix.lib.dependency.api.DependencyNotFoundException;
 
 import java.lang.reflect.Array;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class GenericDependencyResolver {
@@ -73,8 +73,8 @@ public class GenericDependencyResolver {
 
     private static <K, T> ObjectReference<K, T> toObjRef (
         T t,
-        Function < T, K > getIdentifier,
-        Function < T, K[]> getDependencies
+        Function< T, K > getIdentifier,
+        Function< T, K[]> getDependencies
     ) {
         ObjectReference<K, T> objRef = new ObjectReference<>(
             getIdentifier.apply(t), t);
