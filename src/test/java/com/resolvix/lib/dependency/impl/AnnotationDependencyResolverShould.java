@@ -1,5 +1,6 @@
-package com.resolvix.lib.dependency;
+package com.resolvix.lib.dependency.impl;
 
+import com.resolvix.lib.dependency.DependencyResolver;
 import com.resolvix.lib.dependency.api.CyclicDependencyException;
 import com.resolvix.lib.dependency.api.DependencyNotFoundException;
 import org.hamcrest.Matchers;
@@ -13,7 +14,7 @@ import java.lang.annotation.Target;
 
 import static org.hamcrest.Matchers.sameInstance;
 
-public class DependencyResolverShould {
+public class AnnotationDependencyResolverShould {
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.TYPE)
@@ -56,7 +57,7 @@ public class DependencyResolverShould {
     public void resolveDependencies_should_correctly_resolve_well_formed_dependencies()
         throws CyclicDependencyException, DependencyNotFoundException
     {
-        Class<?>[] dependencies = DependencyResolver.resolveDependencies(
+        Class<?>[] dependencies = AnnotationDependencyResolver.resolveDependencies(
             DependsOn.class,
             Class.class,
             DependsOn::value,
