@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 
 public class GenericDependencyResolver {
 
+    private GenericDependencyResolver() { }
+
     private static class ObjectReferenceComparator<K, T>
         implements Comparator<ObjectReference<K, T>>
     {
@@ -84,6 +86,7 @@ public class GenericDependencyResolver {
         return objRef;
     }
 
+    @SafeVarargs
     public static <T, K> T[] resolveDependencies(
         Class<T> classT,
         Function<T, K> identifier,
@@ -109,6 +112,7 @@ public class GenericDependencyResolver {
         objectReferences.sort(
             new ObjectReferenceComparator<>());
 
+        @SuppressWarnings("unchecked")
         T[] tsResult = (T[]) Array.newInstance(classT, ts.length);
 
         List<T> listResult = objectReferences.stream()

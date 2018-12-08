@@ -8,29 +8,17 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class AnnotationDependencyResolver {
 
-    @Deprecated
-    private static <T extends Class<?>> String[] toCanonicalNameList(T[] ts) {
-        String[] ss = new String[ts.length];
-        return Arrays.stream(ts)
-            .map(Class::getCanonicalName)
-            .collect(Collectors.toList())
-            .toArray(ss);
-    }
-
-    private static <T extends Class<?>> Stream<T> toStream(T[] ts) {
-        return Arrays.stream(ts);
-    }
+    private AnnotationDependencyResolver() { }
 
     private static class GetDependenciesForClassFromAnnotation<A extends Annotation, T extends Class<?>>
         implements Function<T, String[]>
     {
-        Class<A> classA;
+        private Class<A> classA;
 
-        Function<A, T[]> getDependenciesFromAnnotation;
+        private Function<A, T[]> getDependenciesFromAnnotation;
 
         GetDependenciesForClassFromAnnotation(
             Class<A> classA,
@@ -55,16 +43,7 @@ public class AnnotationDependencyResolver {
         }
     }
 
-    /**
-     *
-     * @param classA
-     * @param ts
-     * @param <A>
-     * @param <T>
-     * @return
-     * @throws CyclicDependencyException
-     * @throws DependencyNotFoundException
-     */
+    @SafeVarargs
     public static <A extends Annotation, T extends Class<?>> T[] resolveDependencies(
         Class<A> classA,
         Class<T> classT,
@@ -77,7 +56,7 @@ public class AnnotationDependencyResolver {
             = Class::getCanonicalName;
 
         Function<T, String[]> getDependenciesForClassFromAnnotation
-            = new GetDependenciesForClassFromAnnotation<A, T>(classA, getDependencies);
+            = new GetDependenciesForClassFromAnnotation<>(classA, getDependencies);
 
         return GenericDependencyResolver.resolveDependencies(
             classT,

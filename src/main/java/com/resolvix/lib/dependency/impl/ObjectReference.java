@@ -10,7 +10,7 @@ class ObjectReference<K, T>
 
     private T t;
 
-    Map<K, Integer> dependencies;
+    private Map<K, Integer> dependencies;
 
     public ObjectReference(
         K k,

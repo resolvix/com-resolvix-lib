@@ -9,7 +9,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 public class ObjectReferenceShould
-    extends GenericDependencyResolver
 {
     private static <K, T> ObjectReference<K, T> toObjectReference(K k, T t, K[] dependencies) {
         ObjectReference<K, T> objRef = new ObjectReference<>(k, t);

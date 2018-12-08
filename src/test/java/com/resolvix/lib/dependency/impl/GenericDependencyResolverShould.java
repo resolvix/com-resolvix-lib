@@ -9,7 +9,6 @@ import org.junit.rules.ExpectedException;
 
 import static com.resolvix.lib.dependency.impl.GenericDependencyResolver.resolveDependencies;
 import static org.hamcrest.Matchers.arrayContaining;
-import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
 
@@ -17,6 +16,16 @@ public class GenericDependencyResolverShould {
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
+
+    private SampleObject objectA = toObjDep("A", "F", "E");
+    private SampleObject objectB = toObjDep("B", "A");
+    private SampleObject objectC = toObjDep( "C", "D", "B");
+    private SampleObject objectD = toObjDep("D");
+    private SampleObject objectE = toObjDep("E", "F");
+    private SampleObject objectF = toObjDep("F", "D");
+
+    private SampleObject objectG = toObjDep("G", "H");
+    private SampleObject objectH = toObjDep("H", "F", "G");
 
     public static class SampleObject {
 
@@ -50,22 +59,13 @@ public class GenericDependencyResolverShould {
         return new SampleObject(name, dependencies);
     }
 
-    private SampleObject objectA = toObjDep("A", "F", "E");
-    private SampleObject objectB = toObjDep("B", "A");
-    private SampleObject objectC = toObjDep( "C", "D", "B");
-    private SampleObject objectD = toObjDep("D");
-    private SampleObject objectE = toObjDep("E", "F");
-    private SampleObject objectF = toObjDep("F", "D");
-
-    private SampleObject objectG = toObjDep("G", "H");
-    private SampleObject objectH = toObjDep("H", "F", "G");
-
     @Before
     public void before() {
-
+        //
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void resolveDependencies_should_correctly_resolve_well_formed_dependencies()
         throws CyclicDependencyException, DependencyNotFoundException
     {

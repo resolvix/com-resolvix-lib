@@ -6,11 +6,7 @@ import com.resolvix.lib.dependency.impl.AnnotationDependencyResolver;
 import com.resolvix.lib.dependency.impl.GenericDependencyResolver;
 
 import java.lang.annotation.Annotation;
-import java.util.Arrays;
-import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class DependencyResolver {
 
@@ -44,9 +40,12 @@ public class DependencyResolver {
      *
      * @return an array of objects, in a dependency-resolved order
      *
-     * @throws CyclicDependencyException
+     * @throws CyclicDependencyException if there exists an inter-dependency
+     *  between objects appearing in the list subject to dependency resolution
      *
-     * @throws DependencyNotFoundException
+     * @throws DependencyNotFoundException if an object referenced as a
+     *  dependency by another object cannot be found within the list of
+     *  objects provided
      */
     public static <T, K> T[] resolveDependencies(
         Class<T> classT,
@@ -92,9 +91,12 @@ public class DependencyResolver {
      *
      * @return an array of classes, in a dependency-resolved order
      *
-     * @throws CyclicDependencyException
+     * @throws CyclicDependencyException if there exists an inter-dependency
+     *  between classes appearing in the list subject to dependency resolution
      *
-     * @throws DependencyNotFoundException
+     * @throws DependencyNotFoundException if a class represented as a
+     *  dependency by another class cannot be found within the list of classes
+     *  provided
      */
     public static <A extends Annotation, T extends Class<?>> T[] resolveDependencies(
         Class<A> classA,
