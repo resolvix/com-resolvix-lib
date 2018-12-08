@@ -24,7 +24,7 @@ public class GenericDependencyResolver {
 
     private static class LocalDependencyResolver<K, T> {
 
-        Map<K, ObjectReference<K, T>> map;
+        private Map<K, ObjectReference<K, T>> map;
 
         private Deque<K> stack;
 

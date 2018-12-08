@@ -10,14 +10,6 @@ import static org.hamcrest.Matchers.*;
 
 public class ObjectReferenceShould
 {
-    private static <K, T> ObjectReference<K, T> toObjectReference(K k, T t, K[] dependencies) {
-        ObjectReference<K, T> objRef = new ObjectReference<>(k, t);
-
-        Arrays.stream(dependencies)
-            .forEach((K dk) -> objRef.addDependency(dk, 0));
-        return objRef;
-    }
-
     private ObjectReference<String, String> objRefA
         = toObjectReference("A", "ALPHA", new String[] {""});
 
@@ -39,9 +31,17 @@ public class ObjectReferenceShould
     private ObjectReference<String, String> objRefG
         = toObjectReference("G", "GOLF", new String[] {"F", "E"});
 
+    private static <K, T> ObjectReference<K, T> toObjectReference(K k, T t, K[] dependencies) {
+        ObjectReference<K, T> objRef = new ObjectReference<>(k, t);
+
+        Arrays.stream(dependencies)
+            .forEach((K dk) -> objRef.addDependency(dk, 0));
+        return objRef;
+    }
+
     @Before
     public void before() {
-
+        //
     }
 
     @Test

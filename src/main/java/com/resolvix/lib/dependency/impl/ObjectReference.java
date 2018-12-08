@@ -32,7 +32,7 @@ class ObjectReference<K, T>
             dependencies.put(k, level);
     }
 
-    Set<K> getDependencies(int level) {
+    public Set<K> getDependencies(int level) {
         return dependencies.entrySet()
             .stream()
             .filter((Map.Entry<K, Integer> e) -> (e.getValue() <= level))
@@ -77,5 +77,16 @@ class ObjectReference<K, T>
         //  are directly dependent on each other.
         //
         return 0;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (super.equals(obj))
+            return true;
+
+        if (obj instanceof ObjectReference)
+            return (compareTo((ObjectReference<K, T>) obj) == 0);
+
+        return false;
     }
 }

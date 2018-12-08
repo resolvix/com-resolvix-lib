@@ -1,6 +1,5 @@
 package com.resolvix.lib.dependency.impl;
 
-import com.resolvix.lib.dependency.DependencyResolver;
 import com.resolvix.lib.dependency.api.CyclicDependencyException;
 import com.resolvix.lib.dependency.api.DependencyNotFoundException;
 import org.hamcrest.Matchers;
