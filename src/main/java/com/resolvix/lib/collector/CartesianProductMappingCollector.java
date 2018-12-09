@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 
+@Deprecated
 public class CartesianProductMappingCollector<T, I, II>
     implements Collector<T, CartesianProductMappingListAccumulator<T, I, II>, List<I>> {
 

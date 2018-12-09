@@ -17,12 +17,25 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
 
+        <!-- Project dependency versions -->
+
+        <guava.version>27.0.1-jre</guava.version>
+
         <junit.version>4.12</junit.version>
         <hamcrest.version>2.0.0.0</hamcrest.version>
         <mockito.version>2.23.4</mockito.version>
     </properties>
 
     <dependencies>
+
+        <!-- Project dependencies -->
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

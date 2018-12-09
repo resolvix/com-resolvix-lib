@@ -1,26 +1,26 @@
-package com.resolvix.lib.collector;
+package com.resolvix.lib.collector.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiFunction;
-import java.util.function.BinaryOperator;
-import java.util.function.Function;
+import java.util.function.*;
 
-class CartesianProductMappingAccumulator<T, K, U, V> {
+public class CartesianProductMappingAccumulator<T, K, U, V>
+    implements Consumer<T>
+{
 
-    Function<T, K> classifier;
+    private Function<T, K> classifier;
 
-    Function<T, U> fullMapper;
+    private Function<T, U> fullMapper;
 
-    Function<T, V> partialMapper;
+    private Function<T, V> partialMapper;
 
-    BiFunction<U, V, U> fold;
+    private BiFunction<U, V, U> fold;
 
-    BinaryOperator<U> combine;
+    private BinaryOperator<U> combine;
 
-    Map<K, U> map;
+    private Map<K, U> map;
 
     public CartesianProductMappingAccumulator(
         Function<T, K> classifier,
@@ -37,7 +37,7 @@ class CartesianProductMappingAccumulator<T, K, U, V> {
         this.map = new HashMap<>();
     }
 
-    public void accumulate(T t) {
+    public void accept(T t) {
         K k = classifier.apply(t);
         U u = map.get(k);
         if (u == null) {

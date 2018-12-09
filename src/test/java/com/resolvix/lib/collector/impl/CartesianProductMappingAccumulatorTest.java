@@ -1,7 +1,6 @@
-package com.resolvix.lib.collector;
+package com.resolvix.lib.collector.impl;
 
-import com.resolvix.lib.collector.base.BaseCartesianProductMappingTest;
-import junit.framework.TestCase;
+import com.resolvix.lib.collector.impl.base.BaseCartesianProductMappingTest;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
@@ -13,29 +12,28 @@ public class CartesianProductMappingAccumulatorTest
     extends BaseCartesianProductMappingTest {
 
     private CartesianProductMappingAccumulator<
-        CartesianProduct<String, String>, String, OneToMany<String, String>,
-        OneToMany<String, String>> mappingAccumulator
-        = new CartesianProductMappingAccumulator<>(
-        CartesianProduct::getL,
-        BaseCartesianProductMappingTest::toOneToMany,
-        BaseCartesianProductMappingTest::toPartialOneToMany,
-        OneToMany::foldPartial,
-        OneToMany::fold);
-
+            CartesianProduct<String, String>, String, OneToMany<String, String>,
+            OneToMany<String, String>> mappingAccumulator
+            = new CartesianProductMappingAccumulator<>(
+                CartesianProduct::getL,
+                BaseCartesianProductMappingTest::toOneToMany,
+                BaseCartesianProductMappingTest::toPartialOneToMany,
+                OneToMany::foldPartial,
+                OneToMany::fold);
 
     @Before
     public void before() {
-
+        //
     }
 
     @Test
-    public void anNewMappingAccumulatorWillHaveNoElements() {
+    public void aNewMappingAccumulatorWillHaveNoElements() {
         Assert.assertThat(mappingAccumulator.toList(), Matchers.empty());
     }
 
     @Test
     public void aMappingAccumulatorThatHasConsumedOneSourceItemWillContainOneItem() {
-        mappingAccumulator.accumulate(
+        mappingAccumulator.accept(
             of("A", "B"));
 
         Assert.assertThat(
@@ -48,10 +46,11 @@ public class CartesianProductMappingAccumulatorTest
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void aMappingAccumulatorThatHasConsumedTwoSourceItemsWithSameClassifierWillContainOneItem() {
-        mappingAccumulator.accumulate(
+        mappingAccumulator.accept(
             of("A", "B"));
-        mappingAccumulator.accumulate(
+        mappingAccumulator.accept(
             of("A", "C"));
 
         Assert.assertThat(
@@ -66,10 +65,11 @@ public class CartesianProductMappingAccumulatorTest
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void aMappingAccumulatorThatHasConsumedTwoSourceItemsWithDifferentClassifiersWillContainTwoItems() {
-        mappingAccumulator.accumulate(
+        mappingAccumulator.accept(
             of("A", "B"));
-        mappingAccumulator.accumulate(
+        mappingAccumulator.accept(
             of("B", "C"));
 
         Assert.assertThat(

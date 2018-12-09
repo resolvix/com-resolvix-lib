@@ -8,6 +8,8 @@ import java.util.function.BinaryOperator;
 import java.util.function.Function;
 
 /**
+ * @deprecated
+ *
  * An accumulator designed to map a value of type {@code T},
  * comprising a repeating component and a non-repeating
  * component, to a value of type {@code I} that represents
@@ -27,6 +29,7 @@ import java.util.function.Function;
  *            non-repeatable components to the singular
  *            repeating component
  */
+@Deprecated
 public class CartesianProductMappingListAccumulator<T, I, II> {
 
     private Function<T, I> mappingFunction;

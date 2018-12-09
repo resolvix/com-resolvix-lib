@@ -1,4 +1,4 @@
-package com.resolvix.lib.collector.base;
+package com.resolvix.lib.collector.impl.base;
 
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;

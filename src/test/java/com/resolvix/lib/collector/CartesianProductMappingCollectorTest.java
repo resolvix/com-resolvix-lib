@@ -1,21 +1,18 @@
 package com.resolvix.lib.collector;
 
-import com.resolvix.lib.collector.base.BaseCartesianProductMappingTest;
-import org.hamcrest.*;
-import org.junit.Assert;
+import com.resolvix.lib.collector.impl.base.BaseCartesianProductMappingTest;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.allOf;
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.junit.Assert.assertThat;
 
+@Ignore
+@Deprecated
 public class CartesianProductMappingCollectorTest
     extends BaseCartesianProductMappingTest {
 
