@@ -69,21 +69,10 @@ public class CartesianProductMappingAccumulator<T, K, U, V>
         return this;
     }
 
-    @Deprecated
     public List<U> toList() {
         List<U> us = new ArrayList<>();
         us.addAll(map.values());
         return us;
-    }
-
-    public Set<U> toSet() {
-        Set<U> us = new HashSet<>();
-        us.addAll(map.values());
-        return us;
-    }
-
-    public void appendTo(Set<U> setU) {
-        setU.addAll(map.values());
     }
 
     public Stream<U> stream() {

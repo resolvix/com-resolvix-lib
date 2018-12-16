@@ -1,10 +1,18 @@
 package com.resolvix.lib.collector;
 
 import com.resolvix.lib.collector.impl.base.BaseCartesianProductMappingTest;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Ignore;
+import org.junit.Test;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.Matchers.*;
+import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.junit.Assert.assertThat;
 
 @Ignore
@@ -17,37 +25,16 @@ public class CartesianProductMappingTest
 
     }
 
-    /*
-    @Ignore @Test
-    public void acceptanceTest() {
-        /*CartesianProductMappingListAccumulator<
-            BaseCartesianProductMappingTest.CartesianProduct<String, String>,
-            BaseCartesianProductMappingTest.OneToMany<String, String>,
-            String> accumulator = new CartesianProductMappingListAccumulator<>(
-            CartesianProductMappingListAccumulatorTest::toOneToMany,
-            CartesianProductMappingListAccumulatorTest::toPartialOneToMany,
-            BaseCartesianProductMappingTest.CartesianProduct::getL,
-            BaseCartesianProductMappingTest.OneToMany::fold,
-            BaseCartesianProductMappingTest.OneToMany::foldPartial);*
-
-        CartesianProductMapping<
-            Function<T, U> fullMapper,
-            Function<T, V> partialMapper,
-            Function<T, K> classifier,
-            BiFunction<U, V, W> fold,
-            Collector<T, A, D> downstream>
-
-        cartesianProducts.stream()
-            .forEach(
-                (BaseCartesianProductMappingTest.CartesianProduct<String, String> cartesianProduct) ->
-                    cartesianProductMapping(cartesianProduct)
-            );
-
-        cartesianProducts.stream()
-            .forEach((BaseCartesianProductMappingTest.CartesianProduct<String, String> cartesianProduct) ->
-                accumulator.transformAndAppend(cartesianProduct));
-
-        List<BaseCartesianProductMappingTest.OneToMany<String, String>> oneToManies = accumulator.toList();
+    @Test
+    public void cartesianProductMapping_success_no_downstream_collector() {
+        List<OneToMany<String, String>> oneToManies = cartesianProducts.stream()
+            .collect(
+                CartesianProductMapping.cartesianProductMapping(
+                    CartesianProduct::getL,
+                    BaseCartesianProductMappingTest::toOneToMany,
+                    BaseCartesianProductMappingTest::toPartialOneToMany,
+                    OneToMany::foldPartial,
+                    OneToMany::fold));
 
         assertThat(oneToManies, hasItems(
             oneToManyMatcher("a", "b", "c", "d", "e", "f"),
@@ -55,5 +42,28 @@ public class CartesianProductMappingTest
             oneToManyMatcher("c", "k", "l", "m")
         ));
     }
-    */
+
+    @Test
+    public void cartesianProductMapping_success_with_downstream_collector() {
+        Map<String, List<String>> oneToManies = cartesianProducts.stream()
+            .collect(
+                CartesianProductMapping.cartesianProductMapping(
+                    CartesianProduct::getL,
+                    BaseCartesianProductMappingTest::toOneToMany,
+                    BaseCartesianProductMappingTest::toPartialOneToMany,
+                    OneToMany::foldPartial,
+                    OneToMany::fold,
+                    Collectors.toMap(
+                        OneToMany::getL,
+                        OneToMany::getListR
+                    )
+                )
+            );
+
+        assertThat(oneToManies, allOf(
+            hasEntry(equalTo("a"), contains("b", "c", "d", "e", "f")),
+            hasEntry(equalTo("b"), contains("g", "h", "i", "j")),
+            hasEntry(equalTo("c"), contains("k", "l", "m"))
+        ));
+    }
 }

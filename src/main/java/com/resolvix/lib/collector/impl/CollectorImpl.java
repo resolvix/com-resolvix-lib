@@ -20,7 +20,7 @@ public class CollectorImpl<T, A, R>
 
     private final Set<Characteristics> characteristics;
 
-    CollectorImpl(
+    public CollectorImpl(
         Supplier<A> supplier,
         BiConsumer<A, T> accumulator,
         BinaryOperator<A> combiner,
