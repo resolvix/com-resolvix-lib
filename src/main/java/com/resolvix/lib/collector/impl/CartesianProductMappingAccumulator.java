@@ -1,10 +1,8 @@
 package com.resolvix.lib.collector.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.*;
+import java.util.stream.Stream;
 
 public class CartesianProductMappingAccumulator<T, K, U, V>
     implements Consumer<T>
@@ -71,9 +69,24 @@ public class CartesianProductMappingAccumulator<T, K, U, V>
         return this;
     }
 
+    @Deprecated
     public List<U> toList() {
         List<U> us = new ArrayList<>();
         us.addAll(map.values());
         return us;
+    }
+
+    public Set<U> toSet() {
+        Set<U> us = new HashSet<>();
+        us.addAll(map.values());
+        return us;
+    }
+
+    public void appendTo(Set<U> setU) {
+        setU.addAll(map.values());
+    }
+
+    public Stream<U> stream() {
+        return map.values().stream();
     }
 }
