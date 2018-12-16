@@ -1,7 +1,7 @@
 package com.resolvix.lib.collector;
 
 import com.google.common.collect.ImmutableSet;
-import com.resolvix.lib.collector.impl.CartesianProductMappingAccumulator;
+import com.resolvix.lib.collector.impl.CartesianProductMappingAccumulatorImpl;
 import com.resolvix.lib.collector.impl.CollectorImpl;
 
 import java.util.List;
@@ -56,9 +56,9 @@ public class CartesianProductMapping
      *  the cartesian product
      *
      * @return a {@code Collector} implementing the cartesian product mapping
-     *  functionality.
+     *  functionality
      */
-    public static <T, K, U, V> Collector<T, CartesianProductMappingAccumulator<T, K, U, V>, List<U>>
+    public static <T, K, U, V> Collector<T, CartesianProductMappingAccumulatorImpl<T, K, U, V>, List<U>>
         cartesianProductMapping(
             Function<T, K> classifier,
             Function<T, U> fullMapper,
@@ -67,11 +67,11 @@ public class CartesianProductMapping
             BinaryOperator<U> combine)
     {
         return new CollectorImpl<>(
-            () -> new CartesianProductMappingAccumulator<T, K, U, V>(
+            () -> new CartesianProductMappingAccumulatorImpl<T, K, U, V>(
                 classifier, fullMapper, partialMapper, fold, combine),
-            CartesianProductMappingAccumulator::accept,
-            CartesianProductMappingAccumulator::combine,
-            CartesianProductMappingAccumulator::toList,
+            CartesianProductMappingAccumulatorImpl::accept,
+            CartesianProductMappingAccumulatorImpl::combine,
+            CartesianProductMappingAccumulatorImpl::toList,
             ImmutableSet.of(Collector.Characteristics.UNORDERED)
         );
     }
@@ -127,7 +127,7 @@ public class CartesianProductMapping
      * @param <R> the result type of the downstream reduction
      *
      * @return a {@code Collector} implementing the cartesian product mapping
-     *  functionality.
+     *  functionality
      */
     public static <T, K, U, V, R> Collector<T, ?, R>
         cartesianProductMapping(
@@ -139,11 +139,11 @@ public class CartesianProductMapping
             Collector<U, ?, R> downstream
     ) {
         return new CollectorImpl<>(
-                () -> new CartesianProductMappingAccumulator<T, K, U, V>(
+                () -> new CartesianProductMappingAccumulatorImpl<T, K, U, V>(
                         classifier, fullMapper, partialMapper, fold, combine),
-                CartesianProductMappingAccumulator::accept,
-                CartesianProductMappingAccumulator::combine,
-                (CartesianProductMappingAccumulator<T, K, U, V> a) ->
+                CartesianProductMappingAccumulatorImpl::accept,
+                CartesianProductMappingAccumulatorImpl::combine,
+                (CartesianProductMappingAccumulatorImpl<T, K, U, V> a) ->
                     a.stream().collect(downstream),
                 ImmutableSet.of(Collector.Characteristics.UNORDERED)
         );

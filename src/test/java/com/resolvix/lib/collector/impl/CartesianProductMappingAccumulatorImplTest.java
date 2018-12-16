@@ -8,13 +8,13 @@ import org.junit.Test;
 
 import static org.hamcrest.Matchers.*;
 
-public class CartesianProductMappingAccumulatorTest
+public class CartesianProductMappingAccumulatorImplTest
     extends BaseCartesianProductMappingTest {
 
-    private CartesianProductMappingAccumulator<
-            CartesianProduct<String, String>, String, OneToMany<String, String>,
-            OneToMany<String, String>> mappingAccumulator
-            = new CartesianProductMappingAccumulator<>(
+    private CartesianProductMappingAccumulatorImpl<
+                CartesianProduct<String, String>, String, OneToMany<String, String>,
+                OneToMany<String, String>> mappingAccumulator
+            = new CartesianProductMappingAccumulatorImpl<>(
                 CartesianProduct::getL,
                 BaseCartesianProductMappingTest::toOneToMany,
                 BaseCartesianProductMappingTest::toPartialOneToMany,

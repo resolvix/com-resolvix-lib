@@ -1,11 +1,13 @@
 package com.resolvix.lib.collector.impl;
 
+import com.resolvix.lib.collector.api.MappingAccumulator;
+
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Stream;
 
-public class CartesianProductMappingAccumulator<T, K, U, V>
-    implements Consumer<T>
+public class CartesianProductMappingAccumulatorImpl<T, K, U, V>
+    implements MappingAccumulator<T, U>
 {
 
     private Function<T, K> classifier;
@@ -20,7 +22,7 @@ public class CartesianProductMappingAccumulator<T, K, U, V>
 
     private Map<K, U> map;
 
-    public CartesianProductMappingAccumulator(
+    public CartesianProductMappingAccumulatorImpl(
         Function<T, K> classifier,
         Function<T, U> fullMapper,
         Function<T, V> partialMapper,
@@ -47,8 +49,8 @@ public class CartesianProductMappingAccumulator<T, K, U, V>
         }
     }
 
-    public CartesianProductMappingAccumulator<T, K, U, V> combine(
-        CartesianProductMappingAccumulator<T, K, U, V> operand)
+    public CartesianProductMappingAccumulatorImpl<T, K, U, V> combine(
+        CartesianProductMappingAccumulatorImpl<T, K, U, V> operand)
     {
         Map<K, U> mapIn, mapOut;
         if (map.size() >= operand.map.size()) {
