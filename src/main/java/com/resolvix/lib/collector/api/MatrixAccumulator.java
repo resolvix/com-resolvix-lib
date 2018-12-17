@@ -1,5 +1,7 @@
 package com.resolvix.lib.collector.api;
 
+import com.resolvix.lib.collector.Matrix;
+
 import java.util.stream.Collector;
 import java.util.function.Consumer;
 

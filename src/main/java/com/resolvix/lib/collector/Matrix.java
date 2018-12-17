@@ -16,26 +16,35 @@ public class Matrix {
     private Matrix() { }
 
 
-    public static class X { }
+    public static class X<R1, R2> {
 
+        R1 r1;
+
+        R2 r2;
+
+        public X(R1 r1, R2 r2) {
+            this.r1 = r1;
+            this.r2 = r2;
+        }
+    }
 
     public static class MatrixCollector<T,
         U, A1, R1, C1 extends Collector<U, A1, R1>,
         V, A2, R2, C2 extends Collector<V, A2, R2>>
-        implements Collector<T, MatrixAccumulator, X>
+        implements Collector<T, MatrixAccumulatorImpl<T, U, A1, R1, C1, V, A2, R2, C2>, X>
     {
-        private Collector<U, A1, R1> firstCollector;
+        private C1 firstCollector;
 
         private Function<T, U> firstMapper;
 
-        private Collector<V, A2, R2> secondCollector;
+        private C2 secondCollector;
 
         private Function<T, V> secondMapper;
 
         MatrixCollector(
-            Collector<U, A1, R1> firstCollector,
+            C1 firstCollector,
             Function<T, U> firstMapper,
-            Collector<V, A2, R2> secondCollector,
+            C2 secondCollector,
             Function<T, V> secondMapper
         ) {
             this.firstCollector = firstCollector;
@@ -46,23 +55,25 @@ public class Matrix {
         }
 
         @Override
-        public Supplier<MatrixAccumulator> supplier() {
-            return null;
+        public Supplier<MatrixAccumulatorImpl<T, U, A1, R1, C1, V, A2, R2, C2>> supplier() {
+            return () -> new MatrixAccumulatorImpl<T, U, A1, R1, C1, V, A2, R2, C2>(
+                firstCollector, firstMapper,
+                secondCollector, secondMapper);
         }
 
         @Override
-        public BiConsumer<MatrixAccumulator, T> accumulator() {
-            return null;
+        public BiConsumer<MatrixAccumulatorImpl<T, U, A1, R1, C1, V, A2, R2, C2>, T> accumulator() {
+            return MatrixAccumulator::accept;
         }
 
         @Override
-        public BinaryOperator<MatrixAccumulator> combiner() {
-            return null;
+        public BinaryOperator<MatrixAccumulatorImpl<T, U, A1, R1, C1, V, A2, R2, C2>> combiner() {
+            return MatrixAccumulatorImpl::combine;
         }
 
         @Override
-        public Function<MatrixAccumulator, X> finisher() {
-            return null;
+        public Function<MatrixAccumulatorImpl<T, U, A1, R1, C1, V, A2, R2, C2>, X> finisher() {
+            return MatrixAccumulatorImpl::finish;
         }
 
         @Override

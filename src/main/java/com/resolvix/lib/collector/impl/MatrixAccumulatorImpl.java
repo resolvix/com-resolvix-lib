@@ -1,5 +1,6 @@
 package com.resolvix.lib.collector.impl;
 
+import com.resolvix.lib.collector.Matrix;
 import com.resolvix.lib.collector.api.MatrixAccumulator;
 
 import java.util.Map;
@@ -9,9 +10,9 @@ import java.util.stream.Collector;
 import java.util.stream.Stream;
 
 public class MatrixAccumulatorImpl<
-    T, U, V,
-    C1 extends Collector<U, A1, R1>, A1, R1,
-    C2 extends Collector<V, A2, R2>, A2, R2>
+    T,
+    U, A1, R1, C1 extends Collector<U, A1, R1>,
+    V, A2, R2, C2 extends Collector<V, A2, R2>>
     implements MatrixAccumulator<T, U, V>
 {
     private Function<T, U> firstMapper;
@@ -51,18 +52,44 @@ public class MatrixAccumulatorImpl<
         secondAccumulate.accept(secondAccumulator, v);
     }
 
-    /*public MatrixAccumulatorImpl<T, A1, A2, U, V> combine(
-        MatrixAccumulatorImpl<T, A1, A2, U, V> left,
-        MatrixAccumulatorImpl<T, A1, A2, U, V> right
+    public MatrixAccumulatorImpl<T, U, A1, R1, C1, V, A2, R2, C2>
+        combine(MatrixAccumulatorImpl<T, U, A1, R1, C1, V, A2, R2, C2> operand) {
+        return null;
+    }
+
+    /*public static <T, U, A1, R1, C1 extends Collector<U, A1, R1>,
+        V, A2, R2, C2 extends Collector<V, A2, R2>> MatrixAccumulatorImpl<T, U, A1, R1, C1, V, A2, R2, C2> combine(
+        MatrixAccumulatorImpl<T, U, A1, R1, C1, V, A2, R2, C2> left,
+        MatrixAccumulatorImpl<T, U, A1, R1, C1, V, A2, R2, C2> right
     ) {
-        A1 combinedFirstAccumulators = left.firstAccumulator
+        //A1 combinedFirstAccumulators = left.firstAccumulator
 
 
-        return new MatrixAccumulatorImpl<>(
+        //return new MatrixAccumulatorImpl<>(
 
 
-        )
+        //)
 
+        return null;
+    }*/
 
+    public Matrix.X finish() {
+        return new Matrix.X<>(
+            firstCollector.finisher().apply(firstAccumulator),
+            secondCollector.finisher().apply(secondAccumulator)
+        );
+    }
+
+    /*public static <T, U, A1, R1, C1 extends Collector<U, A1, R1>,
+        V, A2, R2, C2 extends Collector<V, A2, R2>> Matrix.X finish(
+        MatrixAccumulatorImpl<T, U, A1, R1, C1, V, A2, R2, C2> accumulator
+    ) {
+        C1 firstCollector = accumulator.firstCollector;
+        C2 secondCollector = accumulator.secondCollector
+
+        return new Matrix.X(
+            accumulator.firstCollector.finisher().apply(firstAccumulator),
+            accumulator.secondCollector.finisher().apply()
+        );
     }*/
 }
