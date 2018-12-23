@@ -58,7 +58,7 @@ public class CartesianProductMapping
      * @return a {@code Collector} implementing the cartesian product mapping
      *  functionality
      */
-    public static <T, K, U, V> Collector<T, CartesianProductMappingAccumulatorImpl<T, K, U, V>, List<U>>
+    public static <T, K, U, V> Collector<T, ?, List<U>>
         cartesianProductMapping(
             Function<T, K> classifier,
             Function<T, U> fullMapper,
@@ -66,14 +66,13 @@ public class CartesianProductMapping
             BiFunction<U, V, U> fold,
             BinaryOperator<U> combine)
     {
-        return new CollectorImpl<>(
+        return Collector.of(
             () -> new CartesianProductMappingAccumulatorImpl<T, K, U, V>(
                 classifier, fullMapper, partialMapper, fold, combine),
             CartesianProductMappingAccumulatorImpl::accept,
             CartesianProductMappingAccumulatorImpl::combine,
             CartesianProductMappingAccumulatorImpl::toList,
-            ImmutableSet.of(Collector.Characteristics.UNORDERED)
-        );
+            Collector.Characteristics.UNORDERED);
     }
 
     /**
@@ -138,14 +137,13 @@ public class CartesianProductMapping
             BinaryOperator<U> combine,
             Collector<U, ?, R> downstream
     ) {
-        return new CollectorImpl<>(
+        return Collector.of(
                 () -> new CartesianProductMappingAccumulatorImpl<T, K, U, V>(
                         classifier, fullMapper, partialMapper, fold, combine),
                 CartesianProductMappingAccumulatorImpl::accept,
                 CartesianProductMappingAccumulatorImpl::combine,
                 (CartesianProductMappingAccumulatorImpl<T, K, U, V> a) ->
                     a.stream().collect(downstream),
-                ImmutableSet.of(Collector.Characteristics.UNORDERED)
-        );
+                Collector.Characteristics.UNORDERED);
     }
 }

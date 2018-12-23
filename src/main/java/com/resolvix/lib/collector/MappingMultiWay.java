@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collector;
 
-public class MultiWayMapping {
+public class MappingMultiWay {
 
     private static class LocalMapperCollectorPairImpl<T, U, A, R>
         implements MappingMultiWayAccumulatorImpl.MapperCollectorPair<T, U, A, R>
@@ -37,7 +37,7 @@ public class MultiWayMapping {
 
         private List<LocalMapperCollectorPairImpl<T, ?, ?, ?>> mapperCollectorPairs;
 
-        <T> MultiWayMappingCollectorBuilder() {
+        MultiWayMappingCollectorBuilder() {
             this.mapperCollectorPairs = new ArrayList<>();
         }
 
@@ -48,15 +48,21 @@ public class MultiWayMapping {
             return this;
         }
 
-        public MappingMultiWayAccumulator<T> build() {
+        public Collector<T, ?, ?> build() {
             @SuppressWarnings("unchecked")
             MappingMultiWayAccumulatorImpl.MapperCollectorPair<T, ?, ?, ?>[] mcps = mapperCollectorPairs.toArray(
                 (MappingMultiWayAccumulatorImpl.MapperCollectorPair<T, ?, ?, ?>[]) new Collector[] { });
-            return new MappingMultiWayAccumulatorImpl<>(mcps);
+            return Collector.of(
+                () -> new MappingMultiWayAccumulatorImpl<>(mcps),
+                MappingMultiWayAccumulatorImpl::accept,
+                MappingMultiWayAccumulatorImpl::combine,
+                MappingMultiWayAccumulatorImpl::finish,
+                Collector.Characteristics.UNORDERED);
         }
     }
 
-    public static <T> MultiWayMappingCollectorBuilder<T> getBuilder() {
+    public static <T> MultiWayMappingCollectorBuilder<T> getBuilder(
+        Class<T> classT) {
         return new MultiWayMappingCollectorBuilder<>();
     }
 }

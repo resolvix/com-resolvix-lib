@@ -7,6 +7,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
+@Deprecated
 public class CollectorImpl<T, A, R>
     implements Collector<T, A, R>
 {
