@@ -1,4 +1,4 @@
-package com.resolvix.lib.collector.impl;
+package com.resolvix.lib.stream.impl;
 
 import java.util.Set;
 import java.util.function.BiConsumer;

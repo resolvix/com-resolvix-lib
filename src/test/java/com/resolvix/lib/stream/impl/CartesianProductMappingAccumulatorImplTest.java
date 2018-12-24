@@ -1,6 +1,6 @@
-package com.resolvix.lib.collector.impl;
+package com.resolvix.lib.stream.impl;
 
-import com.resolvix.lib.collector.impl.base.BaseCartesianProductMappingTest;
+import com.resolvix.lib.stream.impl.base.BaseCartesianProductMappingTest;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;

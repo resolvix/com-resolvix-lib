@@ -1,14 +1,13 @@
-package com.resolvix.lib.collector.impl;
+package com.resolvix.lib.stream.impl;
 
-import com.resolvix.lib.collector.impl.base.BaseMappingMultiWayTest;
+import com.resolvix.lib.stream.impl.base.BaseMappingTest;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.util.Arrays;
-
+@Deprecated
 public class MultiWayAccumulatorImplTest
-    extends BaseMappingMultiWayTest
+    extends BaseMappingTest
 {
 
     @Before

@@ -1,19 +1,18 @@
-package com.resolvix.lib.collector;
+package com.resolvix.lib.stream;
 
-import com.resolvix.lib.collector.impl.base.BaseCartesianProductMappingTest;
+import com.resolvix.lib.stream.impl.base.BaseCartesianProductMappingTest;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.junit.Assert.assertThat;
 
-public class CartesianProductMappingTest
+public class CollectorsCartesianProductMappingTest
     extends BaseCartesianProductMappingTest
 {
 
@@ -26,7 +25,7 @@ public class CartesianProductMappingTest
     public void cartesianProductMapping_success_no_downstream_collector() {
         List<OneToMany<String, String>> oneToManies = cartesianProducts.stream()
             .collect(
-                CartesianProductMapping.cartesianProductMapping(
+                Collectors.cartesianProductMapping(
                     CartesianProduct::getL,
                     BaseCartesianProductMappingTest::toOneToMany,
                     BaseCartesianProductMappingTest::toPartialOneToMany,
@@ -44,13 +43,13 @@ public class CartesianProductMappingTest
     public void cartesianProductMapping_success_with_downstream_collector() {
         Map<String, List<String>> oneToManies = cartesianProducts.stream()
             .collect(
-                CartesianProductMapping.cartesianProductMapping(
+                Collectors.cartesianProductMapping(
                     CartesianProduct::getL,
                     BaseCartesianProductMappingTest::toOneToMany,
                     BaseCartesianProductMappingTest::toPartialOneToMany,
                     OneToMany::foldPartial,
                     OneToMany::fold,
-                    Collectors.toMap(
+                    java.util.stream.Collectors.toMap(
                         OneToMany::getL,
                         OneToMany::getListR
                     )

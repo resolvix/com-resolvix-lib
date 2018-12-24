@@ -1,14 +1,13 @@
-package com.resolvix.lib.collector.impl;
+package com.resolvix.lib.stream.impl;
 
-import com.resolvix.lib.collector.Matrix;
-import com.resolvix.lib.collector.api.MatrixAccumulator;
+import com.resolvix.lib.stream.Matrix;
+import com.resolvix.lib.stream.api.MatrixAccumulator;
 
-import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collector;
-import java.util.stream.Stream;
 
+@Deprecated
 public class MatrixAccumulatorImpl<
     T,
     U, A1, R1, C1 extends Collector<U, A1, R1>,

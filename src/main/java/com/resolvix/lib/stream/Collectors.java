@@ -1,16 +1,14 @@
-package com.resolvix.lib.collector;
+package com.resolvix.lib.stream;
 
-import com.google.common.collect.ImmutableSet;
-import com.resolvix.lib.collector.impl.CartesianProductMappingAccumulatorImpl;
-import com.resolvix.lib.collector.impl.CollectorImpl;
+import com.resolvix.lib.stream.impl.CartesianProductMappingAccumulatorImpl;
 
 import java.util.List;
 import java.util.function.*;
 import java.util.stream.Collector;
 
-public class CartesianProductMapping
+public class Collectors
 {
-    private CartesianProductMapping() { }
+    private Collectors() { }
 
     /**
      * Returns a {@link Collector} which performs an efficient mapping of its

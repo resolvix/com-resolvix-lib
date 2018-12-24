@@ -1,4 +1,4 @@
-package com.resolvix.lib.collector.api;
+package com.resolvix.lib.stream.api;
 
 import java.util.List;
 import java.util.stream.Collector;
@@ -6,6 +6,8 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 /**
+ * @deprecated
+ *
  * Defines the interface to an accumulator for a {@link Collector} of
  * one or more elements of a data set that maps the input elements
  * to an output element before collection.
@@ -14,6 +16,7 @@ import java.util.stream.Stream;
  *
  * @param <U> the output type
  */
+@Deprecated
 public interface MappingAccumulator<T, U>
     extends Consumer<T>
 {

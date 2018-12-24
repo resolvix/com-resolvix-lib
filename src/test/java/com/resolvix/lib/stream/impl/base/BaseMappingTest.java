@@ -1,6 +1,6 @@
-package com.resolvix.lib.collector.impl.base;
+package com.resolvix.lib.stream.impl.base;
 
-public class BaseMappingMultiWayTest {
+public class BaseMappingTest {
 
     protected static class X {
 

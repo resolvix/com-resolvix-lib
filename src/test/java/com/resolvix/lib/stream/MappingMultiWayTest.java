@@ -1,17 +1,16 @@
-package com.resolvix.lib.collector;
+package com.resolvix.lib.stream;
 
-import com.resolvix.lib.collector.impl.MappingMultiWayAccumulatorImpl;
-import com.resolvix.lib.collector.impl.base.BaseMappingMultiWayTest;
+import com.resolvix.lib.stream.impl.base.BaseMappingTest;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Deprecated
 public class MappingMultiWayTest
-    extends BaseMappingMultiWayTest
+    extends BaseMappingTest
 {
 
     @Before
@@ -33,4 +32,14 @@ public class MappingMultiWayTest
                     .build()
             );
     }
+
+    @Test
+    public void alternativeApproachToMultiWayCollecting() {
+
+
+        /*Arrays.stream(xs)
+                .
+        */
+    }
+
 }

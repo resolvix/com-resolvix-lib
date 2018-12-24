@@ -1,8 +1,7 @@
-package com.resolvix.lib.collector;
+package com.resolvix.lib.stream;
 
-import com.google.common.collect.ImmutableSet;
-import com.resolvix.lib.collector.api.MatrixAccumulator;
-import com.resolvix.lib.collector.impl.MatrixAccumulatorImpl;
+import com.resolvix.lib.stream.api.MatrixAccumulator;
+import com.resolvix.lib.stream.impl.MatrixAccumulatorImpl;
 
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -11,6 +10,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
+@Deprecated
 public class Matrix {
 
     private Matrix() { }

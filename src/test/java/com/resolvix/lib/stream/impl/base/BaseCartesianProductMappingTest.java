@@ -1,4 +1,4 @@
-package com.resolvix.lib.collector.impl.base;
+package com.resolvix.lib.stream.impl.base;
 
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;

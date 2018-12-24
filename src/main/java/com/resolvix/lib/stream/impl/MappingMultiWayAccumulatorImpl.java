@@ -1,6 +1,6 @@
-package com.resolvix.lib.collector.impl;
+package com.resolvix.lib.stream.impl;
 
-import com.resolvix.lib.collector.api.MappingMultiWayAccumulator;
+import com.resolvix.lib.stream.api.MappingMultiWayAccumulator;
 
 import java.lang.reflect.Array;
 import java.util.function.BiConsumer;
@@ -8,8 +8,9 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collector;
 
+@Deprecated
 public class MappingMultiWayAccumulatorImpl<T>
-    implements MappingMultiWayAccumulator<T>
+    implements Consumer<T>
 {
 
     public interface MapperCollectorPair<T, U, A, R> {
@@ -91,7 +92,6 @@ public class MappingMultiWayAccumulatorImpl<T>
         accumulator.accept(t, mapper.apply(t));
     }
 
-    @Override
     public void accept(T t) {
         for (CollectorAccumulator<T, ?, ?, ?> collectorAccumulator : collectorAccumulators) {
             collectorAccumulator.accept(t);

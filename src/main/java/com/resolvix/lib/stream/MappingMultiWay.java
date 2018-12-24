@@ -1,13 +1,13 @@
-package com.resolvix.lib.collector;
+package com.resolvix.lib.stream;
 
-import com.resolvix.lib.collector.api.MappingMultiWayAccumulator;
-import com.resolvix.lib.collector.impl.MappingMultiWayAccumulatorImpl;
+import com.resolvix.lib.stream.impl.MappingMultiWayAccumulatorImpl;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collector;
 
+@Deprecated
 public class MappingMultiWay {
 
     private static class LocalMapperCollectorPairImpl<T, U, A, R>

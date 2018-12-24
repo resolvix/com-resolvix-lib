@@ -1,13 +1,13 @@
-package com.resolvix.lib.collector.impl;
+package com.resolvix.lib.stream.impl;
 
-import com.resolvix.lib.collector.api.MappingAccumulator;
+import com.resolvix.lib.stream.api.MappingAccumulator;
 
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Stream;
 
 public class CartesianProductMappingAccumulatorImpl<T, K, U, V>
-    implements MappingAccumulator<T, U>
+    implements Consumer<T>
 {
 
     private Function<T, K> classifier;
