@@ -1,16 +1,22 @@
 package com.resolvix.lib.stream;
 
+import com.resolvix.lib.stream.api.Injector;
 import com.resolvix.lib.stream.impl.base.BaseMappingTest;
+import org.hamcrest.CoreMatchers;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.stream.Collector;
+import java.util.stream.Collectors;
+
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertThat;
 
 public class InjectorsTest
     extends BaseMappingTest
@@ -36,23 +42,60 @@ public class InjectorsTest
         }
     }
 
-    @Test
-    public void preferredMappingCollectorStyle() {
+    @Ignore @Test
+    public void shouldInjectIntoSingleCollector() {
+    }
 
-        Collector<X, ?, List<X>> collectorA;
+    @Ignore @Test
+    public void shouldInjectIntoMultipleCollectors() {
 
-        Collector<X, ?, Set<X>> collectorB;
+        Collector<X, ?, List<X>> collectorListX = Collectors.toList();
+
+        Collector<X, ?, Set<X>> collectorSetX = Collectors.toSet();
 
         Arrays.stream(xs)
                 .collect(
-                        Injectors.injector()
-                )
-                .collect(java.util.stream.Collectors.toList())
-                .stream()
-                .peek(injector());
+                        Injectors.of(
+                                Injectors.of(collectorListX),
+                                Injectors.of(collectorSetX)));
 
-        //    .p(collectorA, collectorB);
+    }
 
+    @Test
+    public void shouldInjectIntoSingleCollection() {
 
+        Collection<X> collectionX = new ArrayList<>();
+
+        Arrays.stream(xs)
+                .collect(
+                        Injectors.of(collectionX));
+
+        assertThat(collectionX, not(empty()));
+    }
+
+    @Test
+    public void shouldInjectIntoSingleSet() {
+
+        Set<X> setX = new HashSet<>();
+
+        Arrays.stream(xs)
+                .collect(
+                        Injectors.of(setX));
+
+        assertThat(setX, not(empty()));
+    }
+
+    @Ignore @Test
+    public void shouldInjectIntoMultipleCollections() {
+
+        Collection<X> collectionX1 = new ArrayList<>();
+
+        Collection<X> collectionX2 = new LinkedList<>();
+
+        Arrays.stream(xs)
+                .collect(
+                        Injectors.of(
+                                Injectors.of(collectionX1),
+                                Injectors.of(collectionX2)));
     }
 }
