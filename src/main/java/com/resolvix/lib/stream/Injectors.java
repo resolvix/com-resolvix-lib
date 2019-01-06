@@ -60,13 +60,19 @@ public class Injectors {
     }
 
     /**
+     * Returns a new {@link Injector}.
      *
+     * @param r the data structure for the injected objects
      *
-     * @param r
-     * @param consumerRT
-     * @param <T>
-     * @param <R>
-     * @return
+     * @param consumerRT to method responsible for adding the injected objects
+     *  to the data structure, {@code r}
+     *
+     * @param <T> the type of injected object
+     *
+     * @param <R> the type of the data structure for the injected objects.
+     *
+     * @return an {@link Injector<T, R>} that accepts the injected objects,
+     *  {@link T}, and appends them to the data structure {@code r}.
      */
     public static <T, R> Injector<T, R> of(
             R r, BiConsumer<R, T> consumerRT, BinaryOperator<R> combiner) {
@@ -128,13 +134,11 @@ public class Injectors {
                 r,
                 (R rX, T t) -> { rX.add(t); },
                 (R r1, R r2) -> {
-                    if (r1.size() < r2.size()) {
-                        r2.addAll(r1);
-                        return r2;
-                    } else {
-                        r1.addAll(r2);
-                        return r1;
-                    }
+                    //
+                    //  The process of injecting a data stream into a specific
+                    //  data structure cannot take place in parallel.
+                    //
+                    throw new UnsupportedOperationException();
                 });
     }
 
