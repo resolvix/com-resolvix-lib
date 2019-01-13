@@ -4,6 +4,7 @@ import com.resolvix.lib.stream.api.Injector;
 import com.resolvix.lib.stream.api.MultiplexedInjector;
 import com.resolvix.lib.stream.impl.CollectionInjectorImpl;
 import com.resolvix.lib.stream.impl.MapInjectorImpl;
+import com.resolvix.lib.stream.impl.MultiplexedInjectorImpl;
 
 import java.lang.reflect.Array;
 import java.util.*;
@@ -102,17 +103,10 @@ public class Injectors {
 
     public static <T, K, R extends Map<K, T>> Injector<T, R> of(R r, Function<T, K> classifier)
     {
-        return new MapInjectorImpl<>(
+        return new MapInjectorImpl<T, K, T, R>(
             r,
             classifier,
             R::put,
-            (R r1, R r2) -> {
-                //
-                //  The process of injecting a data stream into a specific
-                //  data structure cannot take place in parallel.
-                //
-                throw new UnsupportedOperationException();
-            },
             Collector.Characteristics.UNORDERED,
             Collector.Characteristics.IDENTITY_FINISH);
     }
@@ -124,13 +118,6 @@ public class Injectors {
             classifier,
             valuer,
             R::put,
-            (R r1, R r2) -> {
-                //
-                //  The process of injecting a data stream into a specific
-                //  data structure cannot take place in parallel.
-                //
-                throw new UnsupportedOperationException();
-            },
             Collector.Characteristics.UNORDERED,
             Collector.Characteristics.IDENTITY_FINISH);
     }
@@ -152,15 +139,18 @@ public class Injectors {
                 });
     }*/
 
-    public static <T> Injector<T, Object[]> of(
-            Injector<T, Object>... injectors
+    /*public static <T> Injector<T, Object[]> of(
+        Injector<T, ?>... injectors
     ) {
-        return null;
+        return new MultiplexedInjectorImpl<T, Object[]>(
+                Object.class, injectors);
+    }*/
 
-        /*return new InjectorImpl<>(
-            new MultiplexedInjector<>(injectors),
-            MultiplexedInjector::accumulate,
-
-        )*/
+    public static <T, R> Injector<T, R[]> of(
+            Class<R> classR,
+            Injector<T, R>... injectors
+    ) {
+        return new MultiplexedInjectorImpl<>(
+                classR, injectors);
     }
 }

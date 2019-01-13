@@ -12,45 +12,50 @@ import java.util.stream.Collector;
 abstract class BaseInjectorImpl<T, R>
     implements Injector<T, R>
 {
-    protected R r;
-
-    protected BiConsumer<R, T> accumulator;
-
-    protected BinaryOperator<R> combiner;
-
     protected Set<Characteristics> characteristics;
 
     public BaseInjectorImpl(
-        R r,
-        BiConsumer<R, T> accumulator,
-        BinaryOperator<R> combiner,
         Collector.Characteristics... characteristics) {
-        this.r = r;
-        this.accumulator = accumulator;
-        this.combiner = combiner;
         this.characteristics = new HashSet<>();
         this.characteristics.addAll(
             Arrays.asList(characteristics));
     }
 
+    protected abstract R supply();
+
+    protected abstract void accumulate(R r, T t);
+
+    protected R combine(R left, R right) {
+        //
+        //  A {@code combine} operating cannot be supported where stream
+        //  values are being injected to a single instance of a data
+        //  structure.
+        //
+        throw new UnsupportedOperationException();
+    }
+
+    protected R finish(R r) {
+        return r;
+    }
+
     @Override
     public Supplier<R> supplier() {
-        return () -> r;
+        return this::supply;
     }
 
     @Override
     public BiConsumer<R, T> accumulator() {
-        return accumulator;
+        return this::accumulate;
     }
 
     @Override
     public BinaryOperator<R> combiner() {
-        return combiner;
+        return this::combine;
     }
 
     @Override
     public Function<R, R> finisher() {
-        return Function.identity();
+        return this::finish;
     }
 
     @Override

@@ -48,16 +48,17 @@ public class InjectorsTest
     @Ignore @Test
     public void injectIntoMultipleCollectors() {
 
-        Collector<X, ?, List<X>> collectorListX = Collectors.toList();
+    /*    Injector<X, List<X>> collectorListX = Collectors.toList();
 
-        Collector<X, ?, Set<X>> collectorSetX = Collectors.toSet();
+        Injector<X, ?, Set<X>> collectorSetX = Collectors.toSet();
 
         Arrays.stream(xs)
                 .collect(
                         Injectors.of(
+                                Collection.class,
                                 Injectors.of(collectorListX),
                                 Injectors.of(collectorSetX)));
-
+*/
 //        assertThat(,
 //            contains(a, b, c, d, e));
     }
@@ -132,6 +133,7 @@ public class InjectorsTest
         Arrays.stream(xs)
                 .collect(
                         Injectors.of(
+                                Collection.class,
                                 Injectors.of(collectionX1),
                                 Injectors.of(collectionX2),
                                 Injectors.of(setX)));

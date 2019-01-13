@@ -16,7 +16,7 @@ import java.util.function.Supplier;
  * @param <R>
  */
 public class MultiplexedInjectorImpl<T, R>
-    extends BaseInjectorImpl<T, R>
+    extends BaseInjectorImpl<T, R[]>
 {
 
     /*public static class MultiplexedInjectorXX<T>
@@ -61,17 +61,19 @@ public class MultiplexedInjectorImpl<T, R>
         return us;
     }
 
-    private void accumulate(R[] rs, T t) {
-        for (int i = 0; i < count; i++)
-            injectors[i].accumulator().accept(rs[i], t);
+    @Override
+    protected R[] supply() {
+        return map(injectors, (Injector<T, R> inj) -> inj.supplier().get(), classR);
     }
 
-    private R[] combine(R[] left, R[] right) {
+    @Override
+    protected void accumulate(R[] rs, T t) {
+        //
+        //  Refinement opportunity/: this operation could probably be done in
+        //  parallel.
+        //
         for (int i = 0; i < count; i++)
-            injectors[i].combiner().apply(
-                left[i],
-                right[i]);
-        return left;
+            injectors[i].accumulator().accept(rs[i], t);
     }
 
     /*public R[] finish(R[] rs) {
@@ -90,6 +92,8 @@ public class MultiplexedInjectorImpl<T, R>
 //            MultiplexedInjectorImpl::accumulate,
 //            MultiplexedInjectorImpl::combine
 //        );
+        //super(MultiplexedInjectorImpl::accumulate, MultiplexedInjectorImpl::combine);
+        super();
         this.classR = classR;
         this.injectors = injectors;
         this.count = injectors.length;
