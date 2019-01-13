@@ -14,8 +14,7 @@ import java.util.function.Function;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class InjectorsTest
@@ -43,11 +42,11 @@ public class InjectorsTest
     }
 
     @Ignore @Test
-    public void shouldInjectIntoSingleCollector() {
+    public void injectIntoSingleCollector() {
     }
 
     @Ignore @Test
-    public void shouldInjectIntoMultipleCollectors() {
+    public void injectIntoMultipleCollectors() {
 
         Collector<X, ?, List<X>> collectorListX = Collectors.toList();
 
@@ -59,10 +58,12 @@ public class InjectorsTest
                                 Injectors.of(collectorListX),
                                 Injectors.of(collectorSetX)));
 
+//        assertThat(,
+//            contains(a, b, c, d, e));
     }
 
     @Test
-    public void shouldInjectIntoSingleCollection() {
+    public void injectIntoSingleCollection() {
 
         Collection<X> collectionX = new ArrayList<>();
 
@@ -70,11 +71,11 @@ public class InjectorsTest
                 .collect(
                         Injectors.of(collectionX));
 
-        assertThat(collectionX, not(empty()));
+        assertThat(collectionX, contains(a, b, c, d, e));
     }
 
     @Test
-    public void shouldInjectIntoSingleSet() {
+    public void injectIntoSingleSet() {
 
         Set<X> setX = new HashSet<>();
 
@@ -82,20 +83,63 @@ public class InjectorsTest
                 .collect(
                         Injectors.of(setX));
 
-        assertThat(setX, not(empty()));
+        assertThat(setX, containsInAnyOrder(a, b, c, d, e));
     }
 
-    @Ignore @Test
-    public void shouldInjectIntoMultipleCollections() {
+    @Test
+    public void injectKeyObjectPairIntoSingleMap() {
+
+        Map<String, X> map = new HashMap<>();
+
+        Arrays.stream(xs)
+                .collect(
+                    Injectors.of(map, X::getKey));
+
+        assertThat(map, allOf(
+            hasEntry("a", a),
+            hasEntry("b", b),
+            hasEntry("c", c),
+            hasEntry("d", d),
+            hasEntry("e", e)));
+    }
+
+    @Test
+    public void injectKeyValuePairIntoSingleMap() {
+
+        Map<String, String[]> map = new HashMap<>();
+
+        Arrays.stream(xs)
+            .collect(
+                Injectors.of(map, X::getKey, X::getRefs));
+
+        assertThat(map, allOf(
+            hasEntry("a", new String[] { "a", "b", "c", "d" }),
+            hasEntry("b", new String[] { "e", "f", "g", "h" }),
+            hasEntry("c", new String[] { "i", "j", "k", "l" }),
+            hasEntry("d", new String[] { "m", "n", "o", "p" }),
+            hasEntry("e", new String[] { "q", "r", "s", "t" })));
+    }
+
+    @Test
+    public void injectIntoMultipleCollections() {
 
         Collection<X> collectionX1 = new ArrayList<>();
 
         Collection<X> collectionX2 = new LinkedList<>();
 
+        Set<X> setX = new HashSet<>();
+
         Arrays.stream(xs)
                 .collect(
                         Injectors.of(
                                 Injectors.of(collectionX1),
-                                Injectors.of(collectionX2)));
+                                Injectors.of(collectionX2),
+                                Injectors.of(setX)));
+
+        assertThat(collectionX1, contains(a, b, c, d, e));
+
+        assertThat(collectionX2, contains(a, b, c, d, e));
+
+        assertThat(setX, containsInAnyOrder(a, b, c, d, e));
     }
 }

@@ -22,11 +22,17 @@ public class BaseMappingTest {
         }
     }
 
+    protected X a = new X("a", new String[] { "a", "b", "c", "d" });
+
+    protected X b = new X("b", new String[] { "e", "f", "g", "h" });
+
+    protected X c = new X("c", new String[] { "i", "j", "k", "l" });
+
+    protected X d = new X("d", new String[] { "m", "n", "o", "p" });
+
+    protected X e = new X("e", new String[] { "q", "r", "s", "t" });
+
     protected X[] xs = new X[] {
-        new X("a", new String[] { "a", "b", "c", "d" }),
-        new X("b", new String[] { "e", "f", "g", "h" }),
-        new X("c", new String[] { "i", "j", "k", "l" }),
-        new X("d", new String[] { "m", "n", "o", "p" }),
-        new X("e", new String[] { "q", "r", "s", "t" })
+        a, b, c, d, e
     };
 }

@@ -2,12 +2,14 @@ package com.resolvix.lib.stream;
 
 import com.resolvix.lib.stream.impl.base.BaseMappingTest;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Ignore
 @Deprecated
 public class MappingMultiWayTest
     extends BaseMappingTest
@@ -41,5 +43,4 @@ public class MappingMultiWayTest
                 .
         */
     }
-
 }

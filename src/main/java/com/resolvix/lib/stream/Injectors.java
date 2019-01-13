@@ -1,63 +1,20 @@
 package com.resolvix.lib.stream;
 
 import com.resolvix.lib.stream.api.Injector;
+import com.resolvix.lib.stream.api.MultiplexedInjector;
+import com.resolvix.lib.stream.impl.CollectionInjectorImpl;
+import com.resolvix.lib.stream.impl.MapInjectorImpl;
 
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Injectors {
 
-    public static class InjectorImpl<T, R>
-        implements Injector<T, R>
-    {
-        private R r;
 
-        private BiConsumer<R, T> accumulator;
-
-        private BinaryOperator<R> combiner;
-
-        Set<Collector.Characteristics> characteristics;
-
-        InjectorImpl(
-                R r,
-                BiConsumer<R, T> accumulator,
-                BinaryOperator<R> combiner,
-                Collector.Characteristics... characteristics) {
-            this.r = r;
-            this.accumulator = accumulator;
-            this.combiner = combiner;
-            this.characteristics = new HashSet<>();
-            this.characteristics.addAll(
-                    Arrays.asList(characteristics));
-        }
-
-        @Override
-        public Supplier<R> supplier() {
-            return () -> r;
-        }
-
-        @Override
-        public BiConsumer<R, T> accumulator() {
-            return accumulator;
-        }
-
-        @Override
-        public BinaryOperator<R> combiner() {
-            return combiner;
-        }
-
-        @Override
-        public Function<R, R> finisher() {
-            return Function.identity();
-        }
-
-        @Override
-        public Set<Characteristics> characteristics() {
-            return Collections.unmodifiableSet(characteristics);
-        }
-    }
 
     /**
      * Returns a new {@link Injector}.
@@ -73,17 +30,17 @@ public class Injectors {
      *
      * @return an {@link Injector<T, R>} that accepts the injected objects,
      *  {@link T}, and appends them to the data structure {@code r}.
-     */
-    public static <T, R> Injector<T, R> of(
+     *
+    public static <T, R> Injector<T, R, R> of(
             R r, BiConsumer<R, T> consumerRT, BinaryOperator<R> combiner) {
-        return (Injector<T, R>) new InjectorImpl(
+        return (Injector<T, R, R>) new SimpleInjectorImpl(
                 r,
                 consumerRT,
                 combiner,
                 Collector.Characteristics.UNORDERED,
                 Collector.Characteristics.IDENTITY_FINISH
         );
-    }
+    }*/
 
     public static <T, R> Injector<T, R> of(
                 R r, Consumer<T> consumerT) {
@@ -127,19 +84,55 @@ public class Injectors {
         return null;
     }
 
-    @SuppressWarnings("unchecked")
     public static <T, R extends Collection<T>> Injector<T, R> of(R r)
     {
-        return of(
+        return new CollectionInjectorImpl<>(
                 r,
-                (R rX, T t) -> { rX.add(t); },
+                R::add,
                 (R r1, R r2) -> {
                     //
                     //  The process of injecting a data stream into a specific
                     //  data structure cannot take place in parallel.
                     //
                     throw new UnsupportedOperationException();
-                });
+                },
+                Collector.Characteristics.UNORDERED,
+                Collector.Characteristics.IDENTITY_FINISH);
+    }
+
+    public static <T, K, R extends Map<K, T>> Injector<T, R> of(R r, Function<T, K> classifier)
+    {
+        return new MapInjectorImpl<>(
+            r,
+            classifier,
+            R::put,
+            (R r1, R r2) -> {
+                //
+                //  The process of injecting a data stream into a specific
+                //  data structure cannot take place in parallel.
+                //
+                throw new UnsupportedOperationException();
+            },
+            Collector.Characteristics.UNORDERED,
+            Collector.Characteristics.IDENTITY_FINISH);
+    }
+
+    public static <T, K, V, R extends Map<K, V>> Injector<T, R> of(R r, Function<T, K> classifier, Function<T, V> valuer)
+    {
+        return new MapInjectorImpl<>(
+            r,
+            classifier,
+            valuer,
+            R::put,
+            (R r1, R r2) -> {
+                //
+                //  The process of injecting a data stream into a specific
+                //  data structure cannot take place in parallel.
+                //
+                throw new UnsupportedOperationException();
+            },
+            Collector.Characteristics.UNORDERED,
+            Collector.Characteristics.IDENTITY_FINISH);
     }
 
     /*@SuppressWarnings("unchecked")
@@ -159,9 +152,15 @@ public class Injectors {
                 });
     }*/
 
-    public static <T> Injector<T, ?> of(
-            Injector<T, ?>... injectors
+    public static <T> Injector<T, Object[]> of(
+            Injector<T, Object>... injectors
     ) {
         return null;
+
+        /*return new InjectorImpl<>(
+            new MultiplexedInjector<>(injectors),
+            MultiplexedInjector::accumulate,
+
+        )*/
     }
 }
