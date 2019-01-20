@@ -8,7 +8,6 @@ import java.util.stream.Collector;
  * an object of type {@code T}, collects
  *
  * @param <T>
- * @param <A>
  * @param <R>
  */
 public interface MultiplexedInjector<T, R>

@@ -8,6 +8,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
@@ -48,19 +49,20 @@ public class InjectorsTest
     @Ignore @Test
     public void injectIntoMultipleCollectors() {
 
-    /*    Injector<X, List<X>> collectorListX = Collectors.toList();
+        AtomicReference<List<X>> refListX = new AtomicReference<>();
 
-        Injector<X, ?, Set<X>> collectorSetX = Collectors.toSet();
+        AtomicReference<Set<X>> refSetX = new AtomicReference<>();
 
         Arrays.stream(xs)
                 .collect(
                         Injectors.of(
-                                Collection.class,
-                                Injectors.of(collectorListX),
-                                Injectors.of(collectorSetX)));
-*/
-//        assertThat(,
-//            contains(a, b, c, d, e));
+                                Injectors.of(Collectors.toList(), refListX::set),
+                                Injectors.of(Collectors.toSet(), refSetX::set)));
+
+
+
+        assertThat(,
+            contains(a, b, c, d, e));
     }
 
     @Test
