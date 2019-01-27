@@ -13,10 +13,13 @@ import java.util.stream.Stream;
  * @param <T> the type of object representing the input to the
  *  {@link Injector}
  *
- * @param <R> the type of object representing consumer of the input
+ * @param <A> the type of object representing the accumulator for the stream
+ *  of input objects
+ *
+ * @param <R> the type of object representing output of the {@link Injector}
  */
-public interface Injector<T, R>
-    extends Collector<T, R, R>
+public interface Injector<T, A, R>
+    extends Collector<T, A, R>
 {
 
 }

@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 public class MapInjectorImpl<T, K, V, R extends Map<K, V>>
-    extends BaseInjectorImpl<T, R>
+    extends BaseInjectorImpl<T, R, R>
 {
     private R r;
 
@@ -61,5 +61,10 @@ public class MapInjectorImpl<T, K, V, R extends Map<K, V>>
             throw new RuntimeException("null classifier returned");
 
         putter.put(r, k, v);
+    }
+
+    @Override
+    protected R finish(R r) {
+        return r;
     }
 }

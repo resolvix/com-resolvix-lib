@@ -1,8 +1,10 @@
 package com.resolvix.lib.stream;
 
+import com.resolvix.lib.stream.api.CollectorInjector;
 import com.resolvix.lib.stream.api.Injector;
 import com.resolvix.lib.stream.api.MultiplexedInjector;
 import com.resolvix.lib.stream.impl.CollectionInjectorImpl;
+import com.resolvix.lib.stream.impl.CollectorInjectorImpl;
 import com.resolvix.lib.stream.impl.MapInjectorImpl;
 import com.resolvix.lib.stream.impl.MultiplexedInjectorImpl;
 
@@ -14,8 +16,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Injectors {
-
-
 
     /**
      * Returns a new {@link Injector}.
@@ -43,7 +43,7 @@ public class Injectors {
         );
     }*/
 
-    public static <T, R> Injector<T, R> of(
+    public static <T, R> Injector<T, R, R> of(
                 R r, Consumer<T> consumerT) {
         return null;
     }
@@ -79,13 +79,13 @@ public class Injectors {
         }
     }*/
 
-    public static <T, R> Injector<T, R> of(
+    public static <T, R> Injector<T, ?, R> of(
             Collector<T, ?, R> collector
     ) {
         return null;
     }
 
-    public static <T, R extends Collection<T>> Injector<T, R> of(R r)
+    public static <T, R extends Collection<T>> Injector<T, ?, R> of(R r)
     {
         return new CollectionInjectorImpl<>(
                 r,
@@ -101,7 +101,7 @@ public class Injectors {
                 Collector.Characteristics.IDENTITY_FINISH);
     }
 
-    public static <T, K, R extends Map<K, T>> Injector<T, R> of(
+    public static <T, K, R extends Map<K, T>> Injector<T, ?, R> of(
             R r, Function<T, K> classifier)
     {
         return new MapInjectorImpl<T, K, T, R>(
@@ -112,7 +112,7 @@ public class Injectors {
             Collector.Characteristics.IDENTITY_FINISH);
     }
 
-    public static <T, K, V, R extends Map<K, V>> Injector<T, R> of(
+    public static <T, K, V, R extends Map<K, V>> Injector<T, ?, R> of(
             R r, Function<T, K> classifier, Function<T, V> valuer)
     {
         return new MapInjectorImpl<>(
@@ -124,7 +124,7 @@ public class Injectors {
             Collector.Characteristics.IDENTITY_FINISH);
     }
 
-    public static <T, R> Injector<T, R> of(
+    public static <T, R> CollectorInjector<T, ?, R> off(
             Collector<T, ?, R> collectorT,
             Consumer<R> consumerR) {
         return new CollectorInjectorImpl<>(
@@ -172,9 +172,9 @@ public class Injectors {
      *  returned by each of the injector instances, upon completion of
      *  stream processing
      */
-    public static <T, R> Injector<T, R[]> of(
+    public static <T, R> Injector<T, R[], R[]> of(
             Class<R> classR,
-            Injector<T, R>... injectors
+            Injector<T, ?, ? extends R>... injectors
     ) {
         return new MultiplexedInjectorImpl<>(
                 classR, injectors);

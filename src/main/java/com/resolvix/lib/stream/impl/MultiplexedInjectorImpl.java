@@ -4,98 +4,92 @@ import com.resolvix.lib.stream.api.Injector;
 import com.resolvix.lib.stream.api.MultiplexedInjector;
 
 import java.lang.reflect.Array;
-import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.function.BinaryOperator;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.Arrays;
+import java.util.function.*;
 
 /**
  *
  * @param <T>
  * @param <R>
  */
-public class MultiplexedInjectorImpl<T, R>
-    extends BaseInjectorImpl<T, R[]>
+public class MultiplexedInjectorImpl<T, U, R>
+    extends BaseInjectorImpl<T, U[], R[]>
+    implements MultiplexedInjector<T, U, R>
 {
+    private final Class<R> classR;
 
-    /*public static class MultiplexedInjectorXX<T>
-    {
-        private int count;
+    //private final Class<U> classU;
 
-        private Object[] objects;
+    private final Injector<T, U, R>[] injectors;
 
-        private BiConsumer<Object, T>[] accumulators;
-
-        private BinaryOperator<Object>[] combiners;
-
-        private Function<Object, ?>[] finishers;
-
-        public MultiplexedInjector(
-            Injector<T, ?>... injectors) {
-            this.count = injectors.length;
-            this.objects = map(injectors, Injector::supplier, Object.class);
-            this.accumulators = (BiConsumer<Object, T>[]) map(injectors, Injector::accumulator, BiConsumer.class);
-            this.combiners = (BinaryOperator<Object>[]) map(injectors, Injector::combiner, BinaryOperator.class);
-            this.finishers = (Function<Object, ?>[]) map(injectors, Injector::finisher, Function.class);
-        }
-
-
-
-
-    }*/
-
-    private Class<R> classR;
-
-    private Injector<T, R>[] injectors;
-
-    private int count;
+    private final BiConsumer<U, T>[] accumulators;
 
     @SuppressWarnings("unchecked")
-    private static <T, R, U> U[] map(Injector<T, R>[] injectors, Function<Injector<T, R>, U> getter, Class<U> classU) {
+    private static <T, U, R> U[] map(
+            Injector<T, ?, R>[] injectors,
+            BiFunction<Injector<T, ?, R>, Class<U>, U> getter,
+            Class<U> classU) {
         int length = injectors.length;
         U[] us = (U[]) Array.newInstance(classU, length);
         for (int i = 0; i < length; i++) {
-            us[i] = getter.apply(injectors[i]);
+            us[i] = classU.cast(getter.apply(injectors[i], classU));
         }
         return us;
     }
 
     @Override
-    protected R[] supply() {
-        return map(injectors, (Injector<T, R> inj) -> inj.supplier().get(), classR);
+    @SuppressWarnings("unchecked")
+    protected U[] supply() {
+        return (U[]) Arrays.stream(injectors)
+                .map((Injector<T, ?, ? extends R> injector) -> (U) injector.supplier().get())
+                .toArray();
     }
 
     @Override
-    protected void accumulate(R[] rs, T t) {
+    protected void accumulate(U[] us, T t) {
         //
         //  Refinement opportunity/: this operation could probably be done in
         //  parallel.
         //
-        for (int i = 0; i < count; i++)
-            injectors[i].accumulator().accept(rs[i], t);
+        int length = injectors.length;
+        for (int i = 0; i < length; i++)
+            accumulators[i].accept(us[i], t);
     }
 
-    /*public R[] finish(R[] rs) {
-        R[] finished = (R[]) Array.newInstance(classR, count);
-        for (int i = 0; i < count; i++)
-            finished[i] = injectors[i].finisher().apply(rs[i]);
-        return finished;
-    }*/
+    @Override
+    protected R[] finish(U[] us) {
+        int length = us.length;
+      //  @SuppressWarnings("unchecked")
+        R[] rs = (R[]) Array.newInstance(classR, length);
+        for (int i = 0; i < length; i++) {
+          //  @SuppressWarnings("unchecked")
+            Function<U, R> finisher = (Function<U, R>) injectors[i].finisher();
+            rs[i] = finisher.apply(us[i]);
+        }
+        return rs;
+    }
 
-    public MultiplexedInjectorImpl(
-        Class<R> classR,
-        Injector<T, R>... injectors
+    @SafeVarargs
+    @SuppressWarnings("unchecked")
+    public <RR extends R> MultiplexedInjectorImpl(
+            Class<R> classR,
+         //   Class<U> classU,
+            Injector<T, ?, ? extends R>... injectors
     ) {
-//        super(
-//            (R[]) map(injectors, (Injector<T, R> inj) -> inj.supplier().get(), classR),
-//            MultiplexedInjectorImpl::accumulate,
-//            MultiplexedInjectorImpl::combine
-//        );
-        //super(MultiplexedInjectorImpl::accumulate, MultiplexedInjectorImpl::combine);
         super();
         this.classR = classR;
-        this.injectors = injectors;
-        this.count = injectors.length;
+      //  this.classU = classU;
+
+        int length = injectors.length;
+
+        //
+        //  Initialise the injector accumulator lookup table
+        //
+        this.injectors = (Injector<T, U, R>[]) Array.newInstance(Injector.class, length);
+        this.accumulators = (BiConsumer<U, T>[]) Array.newInstance(BiConsumer.class, length);
+        for (int i = 0; i < length; i++) {
+            this.injectors[i] = (Injector<T, U, R>) injectors[i];
+            this.accumulators[i] = this.injectors[i].accumulator();
+        }
     }
 }

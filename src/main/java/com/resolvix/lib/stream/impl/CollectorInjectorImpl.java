@@ -1,6 +1,7 @@
 package com.resolvix.lib.stream.impl;
 
 import com.resolvix.lib.stream.api.CollectorInjector;
+import com.resolvix.lib.stream.api.Injector;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -9,58 +10,28 @@ import java.util.Set;
 import java.util.function.*;
 import java.util.stream.Collector;
 
+/**
+ * Reference implementation of the {@link CollectorInjector} interface,
+ * enabling a downstream {@link Collector} to be fed through the general
+ * {@link Injector} interface, and the output from the collector on
+ * conclusion of the stream to be output to a method satisfying the
+ * {@link Consumer} interface requirements.
+ *
+ * @param <T> the type of objects consumed by the injector and downstream
+ *  collector
+ *
+ * @param <A> the type of the accumulator of the downstream collector
+ *
+ * @param <R> the type of the output of the downstream collector
+ */
 public class CollectorInjectorImpl<T, A, R>
-    implements CollectorInjector<T, CollectorInjectorImpl.LocalAccumulatorWrapper<T, A, R>, R>
+    implements CollectorInjector<T, A, R>
 {
     private Collector<T, A, R> collectorT;
 
     private Consumer<R> consumerR;
 
     private Set<Collector.Characteristics> characteristics;
-
-    public static class LocalAccumulatorWrapper<T, A ,R>
-        implements AccumulatorWrapper<T, LocalAccumulatorWrapper<T, A, R>, R>
-    {
-        private A accumulator;
-
-        private BiConsumer<A, T> accumulate;
-
-        private BinaryOperator<A> combine;
-
-        private Function<A, R> finish;
-
-       public LocalAccumulatorWrapper(
-                A accumulator,
-                BiConsumer<A, T> accumulate,
-                BinaryOperator<A> combine,
-                Function<A, R> finish) {
-            this.accumulator = accumulator;
-            this.accumulate = accumulate;
-            this.combine = combine;
-            this.finish = finish;
-        }
-
-        public void accumulate(T t) {
-            accumulate.accept(accumulator, t);
-        }
-
-        @Override
-        public LocalAccumulatorWrapper<T, A, R> combine(
-                LocalAccumulatorWrapper<T, A, R> operand) {
-            return new LocalAccumulatorWrapper<T, A, R>(
-                    combine.apply(
-                            accumulator,
-                            operand.accumulator),
-                    accumulate,
-                    combine,
-                    finish);
-
-        }
-
-        public R finish() {
-            return finish.apply(accumulator);
-        }
-    }
 
     public CollectorInjectorImpl(
             Collector<T, A, R> collectorT,
@@ -73,34 +44,32 @@ public class CollectorInjectorImpl<T, A, R>
                 Arrays.asList(characteristics));
     }
 
-    private static <T, A, R> A of(
-            Collector<T, A, R> collectorT) {
-        return new LocalAccumulatorWrapper<T, A, R>(
-            collectorT.supplier().get(),
-            collectorT.accumulator(),
-            collectorT.combiner(),
-            collectorT.finisher()
-        );
-    }
-
     @Override
     public Supplier<A> supplier() {
-        return () -> of(collectorT);
+        return () -> collectorT.supplier().get();
     }
 
     @Override
-    public BiConsumer<AccumulatorWrapper<T, A, R>, T> accumulator() {
-        return AccumulatorWrapper::accumulate;
+    public BiConsumer<A, T> accumulator() {
+        return collectorT.accumulator();
     }
 
     @Override
-    public BinaryOperator<AccumulatorWrapper<T, A, R>> combiner() {
-        return AccumulatorWrapper::combine;
+    public BinaryOperator<A> combiner() {
+        return collectorT.combiner();
+    }
+
+    private R finish(A accumulator) {
+        R r = collectorT.finisher().apply(accumulator);
+        //@SuppressWarnings("unchecked")
+        //S s = (S) r;
+        consumerR.accept(r);
+        return r;
     }
 
     @Override
-    public Function<AccumulatorWrapper<T, A, R>, R> finisher() {
-        return AccumulatorWrapper::finish;
+    public Function<A, R> finisher() {
+        return this::finish;
     }
 
     @Override

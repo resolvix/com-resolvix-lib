@@ -7,7 +7,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 public class CollectionInjectorImpl<T, R extends Collection<T>>
-    extends BaseInjectorImpl<T, R>
+    extends BaseInjectorImpl<T, R, R>
 {
     private R r;
 
@@ -26,13 +26,18 @@ public class CollectionInjectorImpl<T, R extends Collection<T>>
     }
 
     @Override
-    protected void accumulate(R ts, T t) {
+    protected void accumulate(R r, T t) {
         //
         //  The {@code accumlate} method does not require an implementation
         //  because the {@link accumulator} method, below, returns
         //  {@link R#add}.
         //
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected R finish(R r) {
+        return r;
     }
 
     @Override

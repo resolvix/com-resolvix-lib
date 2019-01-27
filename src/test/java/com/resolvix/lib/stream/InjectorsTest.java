@@ -46,23 +46,27 @@ public class InjectorsTest
     public void injectIntoSingleCollector() {
     }
 
-    @Ignore @Test
+    @Test
     public void injectIntoMultipleCollectors() {
 
         AtomicReference<List<X>> refListX = new AtomicReference<>();
 
         AtomicReference<Set<X>> refSetX = new AtomicReference<>();
 
+        Injector<?, ?, ?> x = Injectors.off(Collectors.toList(), refListX::set);
+
         Arrays.stream(xs)
                 .collect(
                         Injectors.of(
-                                Injectors.of(Collectors.toList(), refListX::set),
-                                Injectors.of(Collectors.toSet(), refSetX::set)));
+                                Collection.class,
+                                Injectors.<X, List<X>>off(Collectors.toList(), refListX::set),
+                                Injectors.<X, Set<X>>off(Collectors.toSet(), refSetX::set)));
 
+        assertThat(refListX.get(),
+                contains(a, b, c, d, e));
 
-
-        assertThat(,
-            contains(a, b, c, d, e));
+        assertThat(refSetX.get(),
+                containsInAnyOrder(a, b, c, d, e));
     }
 
     @Test

@@ -9,8 +9,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
-abstract class BaseInjectorImpl<T, R>
-    implements Injector<T, R>
+abstract class BaseInjectorImpl<T, A, R>
+    implements Injector<T, A, R>
 {
     protected Set<Characteristics> characteristics;
 
@@ -21,11 +21,11 @@ abstract class BaseInjectorImpl<T, R>
             Arrays.asList(characteristics));
     }
 
-    protected abstract R supply();
+    protected abstract A supply();
 
-    protected abstract void accumulate(R r, T t);
+    protected abstract void accumulate(A a, T t);
 
-    protected R combine(R left, R right) {
+    protected A combine(A left, A right) {
         //
         //  A {@code combine} operating cannot be supported where stream
         //  values are being injected to a single instance of a data
@@ -34,27 +34,25 @@ abstract class BaseInjectorImpl<T, R>
         throw new UnsupportedOperationException();
     }
 
-    protected R finish(R r) {
-        return r;
-    }
+    protected abstract R finish(A a);
 
     @Override
-    public Supplier<R> supplier() {
+    public Supplier<A> supplier() {
         return this::supply;
     }
 
     @Override
-    public BiConsumer<R, T> accumulator() {
+    public BiConsumer<A, T> accumulator() {
         return this::accumulate;
     }
 
     @Override
-    public BinaryOperator<R> combiner() {
+    public BinaryOperator<A> combiner() {
         return this::combine;
     }
 
     @Override
-    public Function<R, R> finisher() {
+    public Function<A, R> finisher() {
         return this::finish;
     }
 

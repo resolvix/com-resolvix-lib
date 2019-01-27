@@ -10,8 +10,8 @@ import java.util.stream.Collector;
  * @param <T>
  * @param <R>
  */
-public interface MultiplexedInjector<T, R>
-    extends Injector<T, R[]>
+public interface MultiplexedInjector<T, U, R>
+    extends Injector<T, U[], R[]>
 {
 
 }
