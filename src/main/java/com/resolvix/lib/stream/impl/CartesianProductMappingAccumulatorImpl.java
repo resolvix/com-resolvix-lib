@@ -1,7 +1,5 @@
 package com.resolvix.lib.stream.impl;
 
-import com.resolvix.lib.stream.api.MappingAccumulator;
-
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Stream;
