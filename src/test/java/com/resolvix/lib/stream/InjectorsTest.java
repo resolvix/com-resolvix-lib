@@ -53,14 +53,12 @@ public class InjectorsTest
 
         AtomicReference<Set<X>> refSetX = new AtomicReference<>();
 
-        Injector<?, ?, ?> x = Injectors.off(Collectors.toList(), refListX::set);
-
         Arrays.stream(xs)
                 .collect(
                         Injectors.of(
                                 Collection.class,
-                                Injectors.<X, List<X>>off(Collectors.toList(), refListX::set),
-                                Injectors.<X, Set<X>>off(Collectors.toSet(), refSetX::set)));
+                                Injectors.<X, List<X>>of(Collectors.toList(), refListX::set),
+                                Injectors.<X, Set<X>>of(Collectors.toSet(), refSetX::set)));
 
         assertThat(refListX.get(),
                 contains(a, b, c, d, e));

@@ -124,7 +124,7 @@ public class Injectors {
             Collector.Characteristics.IDENTITY_FINISH);
     }
 
-    public static <T, R> CollectorInjector<T, ?, R> off(
+    public static <T, R> CollectorInjector<T, ?, R> of(
             Collector<T, ?, R> collectorT,
             Consumer<R> consumerR) {
         return new CollectorInjectorImpl<>(
