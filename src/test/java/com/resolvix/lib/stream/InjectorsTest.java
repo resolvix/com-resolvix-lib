@@ -14,13 +14,13 @@ import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class InjectorsTest
-    extends BaseMappingTest
-{
+    extends BaseMappingTest {
 
     @Before
     public void before() {
@@ -28,8 +28,7 @@ public class InjectorsTest
     }
 
     public static class Acc
-        implements BinaryOperator<X>
-    {
+        implements BinaryOperator<X> {
 
         @Override
         public X apply(X x, X x2) {
@@ -42,7 +41,8 @@ public class InjectorsTest
         }
     }
 
-    @Ignore @Test
+    @Ignore
+    @Test
     public void injectIntoSingleCollector() {
     }
 
@@ -54,17 +54,17 @@ public class InjectorsTest
         AtomicReference<Set<X>> refSetX = new AtomicReference<>();
 
         Arrays.stream(xs)
-                .collect(
-                        Injectors.of(
-                                Collection.class,
-                                Injectors.<X, List<X>>of(Collectors.toList(), refListX::set),
-                                Injectors.<X, Set<X>>of(Collectors.toSet(), refSetX::set)));
+            .collect(
+                Injectors.of(
+                    Collection.class,
+                    Injectors.<X, List<X>>of(Collectors.toList(), refListX::set),
+                    Injectors.<X, Set<X>>of(Collectors.toSet(), refSetX::set)));
 
         assertThat(refListX.get(),
-                contains(a, b, c, d, e));
+            contains(a, b, c, d, e));
 
         assertThat(refSetX.get(),
-                containsInAnyOrder(a, b, c, d, e));
+            containsInAnyOrder(a, b, c, d, e));
     }
 
     @Test
@@ -73,8 +73,8 @@ public class InjectorsTest
         Collection<X> collectionX = new ArrayList<>();
 
         Arrays.stream(xs)
-                .collect(
-                        Injectors.of(collectionX));
+            .collect(
+                Injectors.of(collectionX));
 
         assertThat(collectionX, contains(a, b, c, d, e));
     }
@@ -85,8 +85,8 @@ public class InjectorsTest
         Set<X> setX = new HashSet<>();
 
         Arrays.stream(xs)
-                .collect(
-                        Injectors.of(setX));
+            .collect(
+                Injectors.of(setX));
 
         assertThat(setX, containsInAnyOrder(a, b, c, d, e));
     }
@@ -97,8 +97,8 @@ public class InjectorsTest
         Map<String, X> map = new HashMap<>();
 
         Arrays.stream(xs)
-                .collect(
-                    Injectors.of(map, X::getKey));
+            .collect(
+                Injectors.of(map, X::getKey));
 
         assertThat(map, allOf(
             hasEntry("a", a),
@@ -118,11 +118,11 @@ public class InjectorsTest
                 Injectors.of(map, X::getKey, X::getRefs));
 
         assertThat(map, allOf(
-            hasEntry("a", new String[] { "a", "b", "c", "d" }),
-            hasEntry("b", new String[] { "e", "f", "g", "h" }),
-            hasEntry("c", new String[] { "i", "j", "k", "l" }),
-            hasEntry("d", new String[] { "m", "n", "o", "p" }),
-            hasEntry("e", new String[] { "q", "r", "s", "t" })));
+            hasEntry("a", new String[]{"a", "b", "c", "d"}),
+            hasEntry("b", new String[]{"e", "f", "g", "h"}),
+            hasEntry("c", new String[]{"i", "j", "k", "l"}),
+            hasEntry("d", new String[]{"m", "n", "o", "p"}),
+            hasEntry("e", new String[]{"q", "r", "s", "t"})));
     }
 
     @Test
@@ -135,17 +135,34 @@ public class InjectorsTest
         Set<X> setX = new HashSet<>();
 
         Arrays.stream(xs)
-                .collect(
-                        Injectors.of(
-                                Collection.class,
-                                Injectors.of(collectionX1),
-                                Injectors.of(collectionX2),
-                                Injectors.of(setX)));
+            .collect(
+                Injectors.of(
+                    Collection.class,
+                    Injectors.of(collectionX1),
+                    Injectors.of(collectionX2),
+                    Injectors.of(setX)));
 
         assertThat(collectionX1, contains(a, b, c, d, e));
 
         assertThat(collectionX2, contains(a, b, c, d, e));
 
         assertThat(setX, containsInAnyOrder(a, b, c, d, e));
+    }
+
+    @Ignore
+    @Test
+    public void injectIntoStream() {
+
+        Stream<X> streamX;
+
+        AtomicReference<List<X>> refListX = new AtomicReference<>();
+
+//        Arrays.stream(xs)
+//            .collect(
+//                Injectors.of(
+//                    streamX,
+//                    refListX::set));
+
+        assertThat(refListX.get(), contains(a, b, c, d, e));
     }
 }
