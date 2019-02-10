@@ -21,6 +21,8 @@
 
         <guava.version>27.0.1-jre</guava.version>
 
+        <!-- Unit and integration test dependency versions -->
+
         <junit.version>4.12</junit.version>
         <hamcrest.version>2.0.0.0</hamcrest.version>
         <mockito.version>2.23.4</mockito.version>
@@ -35,6 +37,8 @@
             <artifactId>guava</artifactId>
             <version>${guava.version}</version>
         </dependency>
+
+        <!-- Unit and integration test dependencies -->
 
         <dependency>
             <groupId>junit</groupId>
