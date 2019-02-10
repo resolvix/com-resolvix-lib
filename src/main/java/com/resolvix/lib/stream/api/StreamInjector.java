@@ -1,7 +1,6 @@
 package com.resolvix.lib.stream.api;
 
 import java.util.stream.Collector;
-import java.util.stream.Stream;
 
 /**
  * Defines the interface to a {@link StreamInjector}, a specialised form of

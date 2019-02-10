@@ -1,10 +1,7 @@
 package com.resolvix.lib.stream.impl;
 
 import java.util.Map;
-import java.util.function.BiConsumer;
-import java.util.function.BinaryOperator;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 public class MapInjectorImpl<T, K, V, R extends Map<K, V>>

@@ -18,8 +18,6 @@ public class MultiplexedInjectorImpl<T, U, R>
 {
     private final Class<R> classR;
 
-    //private final Class<U> classU;
-
     private final Injector<T, U, R>[] injectors;
 
     private final BiConsumer<U, T>[] accumulators;

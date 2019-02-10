@@ -18,7 +18,7 @@ public class CollectorsCartesianProductMappingTest
 
     @Before
     public void before() {
-
+        //
     }
 
     @Test

@@ -6,76 +6,17 @@ import com.resolvix.lib.stream.api.MultiplexedInjector;
 import com.resolvix.lib.stream.api.StreamInjector;
 import com.resolvix.lib.stream.impl.*;
 
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Injectors {
-
-    /**
-     * Returns a new {@link Injector}.
-     *
-     * @param r the data structure for the injected objects
-     *
-     * @param consumerRT to method responsible for adding the injected objects
-     *  to the data structure, {@code r}
-     *
-     * @param <T> the type of injected object
-     *
-     * @param <R> the type of the data structure for the injected objects.
-     *
-     * @return an {@link Injector<T, R>} that accepts the injected objects,
-     *  {@link T}, and appends them to the data structure {@code r}.
-     *
-    public static <T, R> Injector<T, R, R> of(
-            R r, BiConsumer<R, T> consumerRT, BinaryOperator<R> combiner) {
-        return (Injector<T, R, R>) new SimpleInjectorImpl(
-                r,
-                consumerRT,
-                combiner,
-                Collector.Characteristics.UNORDERED,
-                Collector.Characteristics.IDENTITY_FINISH
-        );
-    }*/
 
     public static <T, R> Injector<T, R, R> of(
                 R r, Consumer<T> consumerT) {
         return null;
     }
-
-    /*public static class InjectorImpl<T, R>
-        implements Injector<T, R>
-    {
-
-
-        @Override
-        public Supplier<R> supplier() {
-            return null;
-        }
-
-        @Override
-        public BiConsumer<R, T> accumulator() {
-            return null;
-        }
-
-        @Override
-        public BinaryOperator<R> combiner() {
-            return null;
-        }
-
-        @Override
-        public Function<R, R> finisher() {
-            return null;
-        }
-
-        @Override
-        public Set<Characteristics> characteristics() {
-            return null;
-        }
-    }*/
 
     public static <T, R> Injector<T, ?, R> of(
             Collector<T, ?, R> collector) {
@@ -135,30 +76,6 @@ public class Injectors {
                 consumerR,
                 Collector.Characteristics.UNORDERED);
     }
-
-    /*@SuppressWarnings("unchecked")
-    public static <T, R extends Set<T>> Injector<T, R> of(R r)
-    {
-        return (Injector<T, R>) of(
-                r,
-                (R rX, T t) -> { rX.add(t); },
-                (R r1, R r2) -> {
-                    if (r1.size() < r2.size()) {
-                        r2.addAll(r1);
-                        return r2;
-                    } else {
-                        r1.addAll(r2);
-                        return r1;
-                    }
-                });
-    }*/
-
-    /*public static <T> Injector<T, Object[]> of(
-        Injector<T, ?>... injectors
-    ) {
-        return new MultiplexedInjectorImpl<T, Object[]>(
-                Object.class, injectors);
-    }*/
 
     /**
      * Returns a {@link MultiplexedInjector}, an injector that injects values

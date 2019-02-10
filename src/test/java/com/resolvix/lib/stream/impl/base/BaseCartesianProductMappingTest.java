@@ -15,6 +15,21 @@ import static org.hamcrest.Matchers.contains;
 
 public abstract class BaseCartesianProductMappingTest {
 
+    protected List<CartesianProduct<String, String>> cartesianProducts = Arrays.asList(
+        of("a", "b"),
+        of("a", "c"),
+        of("a", "d"),
+        of("a", "e"),
+        of("a", "f"),
+        of("b", "g"),
+        of("b", "h"),
+        of("b", "i"),
+        of("b", "j"),
+        of("c", "k"),
+        of("c", "l"),
+        of("c", "m")
+    );
+
     protected static class CartesianProduct<L, R> {
 
         private L l;
@@ -112,19 +127,4 @@ public abstract class BaseCartesianProductMappingTest {
         );
         return oneToManyMatcher;
     }
-
-    protected List<CartesianProduct<String, String>> cartesianProducts = Arrays.asList(
-            of("a", "b"),
-            of("a", "c"),
-            of("a", "d"),
-            of("a", "e"),
-            of("a", "f"),
-            of("b", "g"),
-            of("b", "h"),
-            of("b", "i"),
-            of("b", "j"),
-            of("c", "k"),
-            of("c", "l"),
-            of("c", "m")
-    );
 }

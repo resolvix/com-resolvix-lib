@@ -10,6 +10,12 @@ import java.util.stream.Stream;
 public class StreamInjectorImpl<T, R>
     implements StreamInjector<T, StreamInjectorImpl.StreamBuffer<T>, R> {
 
+    private Function<Stream<T>, R> processorT;
+
+    private Consumer<R> consumerR;
+
+    private Set<Collector.Characteristics> characteristics;
+
     public static class StreamBuffer<T>
         implements Stream.Builder<T> {
 
@@ -30,8 +36,8 @@ public class StreamInjectorImpl<T, R>
         }
 
         private static <T> StreamBuffer<T> combine(
-                StreamBuffer<T> left,
-                StreamBuffer<T> right) {
+            StreamBuffer<T> left,
+            StreamBuffer<T> right) {
             if (left.buffer.size() >= right.buffer.size()) {
                 left.buffer.addAll(right.buffer);
                 return left;
@@ -41,12 +47,6 @@ public class StreamInjectorImpl<T, R>
             }
         }
     }
-
-    private Function<Stream<T>, R> processorT;
-
-    private Consumer<R> consumerR;
-
-    private Set<Collector.Characteristics> characteristics;
 
     public StreamInjectorImpl(
             Function<Stream<T>, R> processorT,

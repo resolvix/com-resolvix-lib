@@ -1,9 +1,6 @@
 package com.resolvix.lib.stream;
 
-import com.resolvix.lib.stream.api.Injector;
-import com.resolvix.lib.stream.impl.StreamInjectorImpl;
 import com.resolvix.lib.stream.impl.base.BaseMappingTest;
-import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -11,7 +8,6 @@ import org.junit.Test;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.*;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -43,6 +39,7 @@ public class InjectorsTest
     @Ignore
     @Test
     public void injectIntoSingleCollector() {
+        //
     }
 
     @Test

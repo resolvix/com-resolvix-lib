@@ -3,7 +3,6 @@ package com.resolvix.lib.stream.impl;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
-import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 public class CollectionInjectorImpl<T, R extends Collection<T>>
