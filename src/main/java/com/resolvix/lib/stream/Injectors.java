@@ -3,10 +3,8 @@ package com.resolvix.lib.stream;
 import com.resolvix.lib.stream.api.CollectorInjector;
 import com.resolvix.lib.stream.api.Injector;
 import com.resolvix.lib.stream.api.MultiplexedInjector;
-import com.resolvix.lib.stream.impl.CollectionInjectorImpl;
-import com.resolvix.lib.stream.impl.CollectorInjectorImpl;
-import com.resolvix.lib.stream.impl.MapInjectorImpl;
-import com.resolvix.lib.stream.impl.MultiplexedInjectorImpl;
+import com.resolvix.lib.stream.api.StreamInjector;
+import com.resolvix.lib.stream.impl.*;
 
 import java.lang.reflect.Array;
 import java.util.*;
@@ -80,13 +78,11 @@ public class Injectors {
     }*/
 
     public static <T, R> Injector<T, ?, R> of(
-            Collector<T, ?, R> collector
-    ) {
+            Collector<T, ?, R> collector) {
         return null;
     }
 
-    public static <T, R extends Collection<T>> Injector<T, ?, R> of(R r)
-    {
+    public static <T, R extends Collection<T>> Injector<T, ?, R> of(R r) {
         return new CollectionInjectorImpl<>(
                 r,
                 R::add,
@@ -102,8 +98,7 @@ public class Injectors {
     }
 
     public static <T, K, R extends Map<K, T>> Injector<T, ?, R> of(
-            R r, Function<T, K> classifier)
-    {
+            R r, Function<T, K> classifier) {
         return new MapInjectorImpl<T, K, T, R>(
             r,
             classifier,
@@ -113,8 +108,7 @@ public class Injectors {
     }
 
     public static <T, K, V, R extends Map<K, V>> Injector<T, ?, R> of(
-            R r, Function<T, K> classifier, Function<T, V> valuer)
-    {
+            R r, Function<T, K> classifier, Function<T, V> valuer) {
         return new MapInjectorImpl<>(
             r,
             classifier,
@@ -129,6 +123,16 @@ public class Injectors {
             Consumer<R> consumerR) {
         return new CollectorInjectorImpl<>(
                 collectorT,
+                consumerR,
+                Collector.Characteristics.UNORDERED,
+                Collector.Characteristics.IDENTITY_FINISH);
+    }
+
+    public static <T, R> StreamInjector<T, ?, R> of(
+            Function<Stream<T>, R> processorT,
+            Consumer<R> consumerR) {
+        return new StreamInjectorImpl<>(
+                processorT,
                 consumerR,
                 Collector.Characteristics.UNORDERED,
                 Collector.Characteristics.IDENTITY_FINISH);
@@ -165,9 +169,13 @@ public class Injectors {
      *
      * @param classR the {@link Class} object representing the return type,
      *  {@code R}
+     *
      * @param injectors zero, one or more instances of an {@link Injector}
+     *
      * @param <T> the type accepted by each of {@link Injector} instance
+     *
      * @param <R> the return type
+     *
      * @return an array of values of type {@code R} containing the result
      *  returned by each of the injector instances, upon completion of
      *  stream processing

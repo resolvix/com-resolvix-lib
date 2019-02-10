@@ -1,6 +1,7 @@
 package com.resolvix.lib.stream;
 
 import com.resolvix.lib.stream.api.Injector;
+import com.resolvix.lib.stream.impl.StreamInjectorImpl;
 import com.resolvix.lib.stream.impl.base.BaseMappingTest;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
@@ -9,9 +10,7 @@ import org.junit.Test;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.BiFunction;
-import java.util.function.BinaryOperator;
-import java.util.function.Function;
+import java.util.function.*;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -149,19 +148,25 @@ public class InjectorsTest
         assertThat(setX, containsInAnyOrder(a, b, c, d, e));
     }
 
-    @Ignore
     @Test
     public void injectIntoStream() {
 
-        Stream<X> streamX;
+        Function<Stream<X>, List<X>> streamProcessor = (Stream<X> streamX) -> {
+            return streamX
+                    .filter((X xx) -> true)
+                    .collect(Collectors.toList());
+        };
 
         AtomicReference<List<X>> refListX = new AtomicReference<>();
 
-//        Arrays.stream(xs)
-//            .collect(
-//                Injectors.of(
-//                    streamX,
-//                    refListX::set));
+        StreamInjectorImpl.StreamBuffer<X> streamBufferX = (StreamInjectorImpl.StreamBuffer<X>) Arrays.stream(xs)
+                .collect(
+                        Injectors.of(
+                                streamProcessor,
+                                refListX::set));
+
+        List<X> listX = streamBufferX.build()
+                .collect(Collectors.toList());
 
         assertThat(refListX.get(), contains(a, b, c, d, e));
     }
