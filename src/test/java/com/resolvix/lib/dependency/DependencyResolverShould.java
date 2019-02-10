@@ -53,7 +53,7 @@ public class DependencyResolverShould {
     }
 
     @Test
-    public void resolveDependencies_should_correctly_resolve_well_formed_dependencies()
+    public void resolveDependenciesShouldCorrectlyResolveWellFormedDependencies()
         throws CyclicDependencyException, DependencyNotFoundException
     {
         Class<?>[] dependencies = DependencyResolver.resolveDependencies(

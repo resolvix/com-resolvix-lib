@@ -22,7 +22,7 @@ public class CollectorsCartesianProductMappingTest
     }
 
     @Test
-    public void cartesianProductMapping_success_no_downstream_collector() {
+    public void cartesianProductMappingNoDownstreamCollector() {
         List<OneToMany<String, String>> oneToManies = cartesianProducts.stream()
             .collect(
                 Collectors.cartesianProductMapping(
@@ -40,7 +40,7 @@ public class CollectorsCartesianProductMappingTest
     }
 
     @Test
-    public void cartesianProductMapping_success_with_downstream_collector() {
+    public void cartesianProductMappingWithDownstreamCollector() {
         Map<String, List<String>> oneToManies = cartesianProducts.stream()
             .collect(
                 Collectors.cartesianProductMapping(

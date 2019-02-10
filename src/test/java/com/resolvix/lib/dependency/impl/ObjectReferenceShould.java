@@ -45,19 +45,19 @@ public class ObjectReferenceShould
     }
 
     @Test
-    public void getK_equals_original_key() {
+    public void getKEqualsOriginalKey() {
         assertThat(objRefA.getK(), equalTo("A"));
         assertThat(objRefB.getK(), equalTo("B"));
     }
 
     @Test
-    public void getT_equals_original_value() {
+    public void getTEqualsOriginalValue() {
         assertThat(objRefA.getT(), equalTo("ALPHA"));
         assertThat(objRefB.getT(), equalTo("BRAVO"));
     }
 
     @Test
-    public void compareTo_neither_dependent_upon_each_other() {
+    public void compareToNeitherDependentUponEachOther() {
         assertThat(
             objRefA.compareTo(objRefB),
             equalTo(0));
@@ -68,7 +68,7 @@ public class ObjectReferenceShould
     }
 
     @Test
-    public void compareTo_directly_dependent_upon_each_other() {
+    public void compareToDirectlyDependentUponEachOther() {
         assertThat(
             objRefC.compareTo(objRefA),
             greaterThanOrEqualTo(1));
@@ -87,7 +87,7 @@ public class ObjectReferenceShould
     }
 
     @Test
-    public void compareTo_is_depended_upon_by_the_other() {
+    public void compareToIsDependedUponByTheOther() {
         assertThat(
             objRefA.compareTo(objRefC),
             lessThanOrEqualTo(-1));
@@ -98,7 +98,7 @@ public class ObjectReferenceShould
     }
 
     @Test
-    public void compareTo_is_indirectly_dependent_upon_the_other() {
+    public void compareToIsIndirectlyDependentOnTheOther() {
         assertThat(
             objRefA.compareTo(objRefE),
             equalTo(0));
@@ -120,14 +120,14 @@ public class ObjectReferenceShould
     }
 
     @Test(expected = IllegalStateException.class)
-    public void compareTo_are_codependent_one() {
+    public void compareToAreCodependentOne() {
         assertThat(
             objRefF.compareTo(objRefG),
             greaterThanOrEqualTo(0));
     }
 
     @Test(expected = IllegalStateException.class)
-    public void compareTo_are_codependent_two() {
+    public void compareToAreCodependentTwo() {
         assertThat(
             objRefG.compareTo(objRefF),
             greaterThanOrEqualTo(0));

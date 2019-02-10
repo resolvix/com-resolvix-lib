@@ -66,7 +66,7 @@ public class GenericDependencyResolverShould {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void resolveDependencies_should_correctly_resolve_well_formed_dependencies()
+    public void resolveDependenciesShouldCorrectlyResolveWellFormedDependencies()
         throws CyclicDependencyException, DependencyNotFoundException
     {
         SampleObject[] dependencies = resolveDependencies(
@@ -81,7 +81,7 @@ public class GenericDependencyResolverShould {
     }
 
     @Test
-    public void resolveDependencies_cannot_resolve_interdependencies()
+    public void resolveDependenciesCannotResolveInterdependencies()
         throws CyclicDependencyException, DependencyNotFoundException
     {
         thrown.expect(CyclicDependencyException.class);
@@ -93,7 +93,7 @@ public class GenericDependencyResolverShould {
     }
 
     @Test
-    public void resolveDependencies_cannot_resolve_unprovided_dependencies()
+    public void resolveDependenciesCannotResolveUnprovidedDependencies()
         throws CyclicDependencyException, DependencyNotFoundException
     {
         thrown.expect(DependencyNotFoundException.class);
