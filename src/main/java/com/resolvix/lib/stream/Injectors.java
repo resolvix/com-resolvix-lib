@@ -124,8 +124,7 @@ public class Injectors {
         return new CollectorInjectorImpl<>(
                 collectorT,
                 consumerR,
-                Collector.Characteristics.UNORDERED,
-                Collector.Characteristics.IDENTITY_FINISH);
+                Collector.Characteristics.UNORDERED);
     }
 
     public static <T, R> StreamInjector<T, ?, R> of(
@@ -134,8 +133,7 @@ public class Injectors {
         return new StreamInjectorImpl<>(
                 processorT,
                 consumerR,
-                Collector.Characteristics.UNORDERED,
-                Collector.Characteristics.IDENTITY_FINISH);
+                Collector.Characteristics.UNORDERED);
     }
 
     /*@SuppressWarnings("unchecked")

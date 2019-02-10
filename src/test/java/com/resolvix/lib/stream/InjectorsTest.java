@@ -159,14 +159,11 @@ public class InjectorsTest
 
         AtomicReference<List<X>> refListX = new AtomicReference<>();
 
-        StreamInjectorImpl.StreamBuffer<X> streamBufferX = (StreamInjectorImpl.StreamBuffer<X>) Arrays.stream(xs)
+        Arrays.stream(xs)
                 .collect(
                         Injectors.of(
                                 streamProcessor,
                                 refListX::set));
-
-        List<X> listX = streamBufferX.build()
-                .collect(Collectors.toList());
 
         assertThat(refListX.get(), contains(a, b, c, d, e));
     }

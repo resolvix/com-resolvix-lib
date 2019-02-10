@@ -75,6 +75,7 @@ public class StreamInjectorImpl<T, R>
     }
 
     private R finish(StreamBuffer<T> buffer) {
+        Stream<T> streamT = buffer.build();
         R r = processorT.apply(buffer.build());
         consumerR.accept(r);
         return r;
