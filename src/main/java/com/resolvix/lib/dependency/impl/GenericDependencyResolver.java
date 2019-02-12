@@ -11,7 +11,9 @@ import java.util.stream.Collectors;
 
 public class GenericDependencyResolver {
 
-    private GenericDependencyResolver() { }
+    private GenericDependencyResolver() {
+        //
+    }
 
     private static class ObjectReferenceComparator<K, T>
         implements Comparator<ObjectReference<K, T>>
@@ -95,7 +97,6 @@ public class GenericDependencyResolver {
     ) throws CyclicDependencyException,
         DependencyNotFoundException
     {
-
         List<ObjectReference<K, T>> objectReferences = Arrays.stream(ts)
             .map((T t) -> toObjRef(t, identifier, directDependencies))
             .collect(Collectors.toList());
@@ -114,7 +115,6 @@ public class GenericDependencyResolver {
 
         @SuppressWarnings("unchecked")
         T[] tsResult = (T[]) Array.newInstance(classT, ts.length);
-
         List<T> listResult = objectReferences.stream()
             .map(ObjectReference::getT)
             .collect(Collectors.toList());

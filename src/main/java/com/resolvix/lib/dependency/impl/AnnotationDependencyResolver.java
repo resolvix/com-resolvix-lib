@@ -13,28 +13,28 @@ public class AnnotationDependencyResolver {
 
     private AnnotationDependencyResolver() { }
 
-    private static class GetDependenciesForClassFromAnnotation<A extends Annotation, T extends Class<?>>
-        implements Function<T, String[]>
+    private static class GetDependenciesForClassFromAnnotation<A extends Annotation, T>
+        implements Function<Class<? extends T>, String[]>
     {
         private Class<A> classA;
 
-        private Function<A, T[]> getDependenciesFromAnnotation;
+        private Function<A, Class<? extends T>[]> getDependenciesFromAnnotation;
 
         GetDependenciesForClassFromAnnotation(
             Class<A> classA,
-            Function<A, T[]> getDependenciesFromAnnotation
+            Function<A, Class<? extends T>[]> getDependenciesFromAnnotation
         ) {
             this.classA = classA;
             this.getDependenciesFromAnnotation = getDependenciesFromAnnotation;
         }
 
         @Override
-        public String[] apply(T t) {
+        public String[] apply(Class<? extends T> t) {
             A a = t.getDeclaredAnnotation(classA);
             if (a == null)
                 return new String[] {};
 
-            T[] ts = getDependenciesFromAnnotation.apply(a);
+            Class<? extends T>[] ts = getDependenciesFromAnnotation.apply(a);
             List<String> lss = Arrays.stream(ts)
                 .map(Class::getCanonicalName)
                 .collect(Collectors.toList());
@@ -44,24 +44,28 @@ public class AnnotationDependencyResolver {
     }
 
     @SafeVarargs
-    public static <A extends Annotation, T extends Class<?>> T[] resolveDependencies(
+    public static <A extends Annotation, T> Class<? extends T>[] resolveDependencies(
         Class<A> classA,
         Class<T> classT,
-        Function<A, T[]> getDependencies,
-        T... ts
+        Function<A, Class<? extends T>[]> getDependencies,
+        Class<? extends T>... classes
     ) throws CyclicDependencyException,
         DependencyNotFoundException
     {
-        Function<T, String> getCanonicalName
+        Function<Class<? extends T>, String> getCanonicalName
             = Class::getCanonicalName;
 
-        Function<T, String[]> getDependenciesForClassFromAnnotation
+        Function<Class<? extends T>, String[]> getDependenciesForClassFromAnnotation
             = new GetDependenciesForClassFromAnnotation<>(classA, getDependencies);
 
+        @SuppressWarnings("unchecked")
+        Class<Class<? extends T>> classClassT
+            = (Class<Class<? extends T>>) classT.getClass();
+
         return GenericDependencyResolver.resolveDependencies(
-            classT,
+            classClassT,
             getCanonicalName,
             getDependenciesForClassFromAnnotation,
-            ts);
+            classes);
     }
 }
