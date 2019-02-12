@@ -73,13 +73,13 @@ public class DependencyResolver {
      *  within the source code to identify a dependency between the
      *  annotated class, and a target class
      *
-     * @param classT reference to the class of classes subject to
-     *  dependency resolution
+     * @param classT reference to the base type or interface of the
+     *  classes subject to dependency resolution
      *
      * @param getDependencies reference to a method that returns, for a
-     *  given annotation, a list of dependencies for the class it is
-     *  associated with, expressed in terms of the canonical names of
-     *  each dependent classes
+     *  given annotation, a list of dependencies for the class, by
+     *  reference to the base type or interface of the classes subject
+     *  to dependency resolution
      *
      * @param ts an array containing the list of classes subject to
      *  dependency resolution
@@ -87,7 +87,8 @@ public class DependencyResolver {
      * @param <A> the class of {@link Annotation} representing the source
      *  of dependency information for the relevant classes
      *
-     * @param <T> the class of classes subject to dependency resolution
+     * @param <T> the base type or interface of the classes subject to
+     *  dependency resolution
      *
      * @return an array of classes, in a dependency-resolved order
      *
@@ -98,11 +99,11 @@ public class DependencyResolver {
      *  dependency by another class cannot be found within the list of classes
      *  provided
      */
-    public static <A extends Annotation, T extends Class<?>> T[] resolveDependencies(
+    public static <A extends Annotation, T> Class<? extends T>[] resolveDependencies(
         Class<A> classA,
         Class<T> classT,
-        Function<A, T[]> getDependencies,
-        T... ts
+        Function<A, Class<? extends T>[]> getDependencies,
+        Class<? extends T>... ts
     ) throws CyclicDependencyException,
         DependencyNotFoundException
     {

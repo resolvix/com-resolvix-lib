@@ -58,7 +58,7 @@ public class DependencyResolverShould {
     {
         Class<?>[] dependencies = DependencyResolver.resolveDependencies(
             DependsOn.class,
-            Class.class,
+            Object.class,
             DependsOn::value,
             A.class, B.class, C.class, D.class, E.class, F.class);
 
