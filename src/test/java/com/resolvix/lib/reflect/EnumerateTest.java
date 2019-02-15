@@ -6,6 +6,8 @@ import static org.junit.Assert.assertThat;
 import com.resolvix.lib.reflect.Enumerate;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.util.Enumeration;
 import java.util.List;
 
 public class EnumerateTest {
@@ -32,4 +34,13 @@ public class EnumerateTest {
             hasItem(equalTo(EnumerateTest.class)));
     }
 
+    @Test
+    public void enumerate() throws IOException {
+
+        List<Class<?>> classes = Enumerate.enumerate(TEST_PACKAGE);
+
+        assertThat(classes, containsInAnyOrder(
+                equalTo(Enumerate.class),
+                equalTo(EnumerateTest.class)));
+    }
 }

@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -19,6 +20,8 @@ public class Enumerate
     private static final String JAR_URL_PREFIX = "jar:";
 
     private static final String CLASS_FILE_EXTENSION = ".class";
+
+    private static final int CLASS_FILE_EXTENSION_LENGTH = CLASS_FILE_EXTENSION.length();
 
     private static Class<?> loadClass(String className) {
         try {
@@ -49,40 +52,41 @@ public class Enumerate
 
         for (int i = 0; i < files.length; i++) {
             String fileName = files[i];
-            String className = null;
 
             //
-            // we are only interested in .class files
+            //  Ignore files that do not have a .class extension: we are only
+            //  interested in Java class files.
             //
             if (fileName.endsWith(CLASS_FILE_EXTENSION)) {
+
                 //
-                // removes the .class extension
+                //  Remove the .class extension.
                 //
-                className = packageName
+                String className = packageName
                     + '.'
-                    + fileName.substring(0, fileName.length() - 6);
-            }
+                    + fileName.substring(0, fileName.length() - CLASS_FILE_EXTENSION_LENGTH);
 
-            LOGGER.debug(
-                "FileName '"
-                    + fileName
-                    + "'  =>  class '"
-                    + className
-                    + "'"
-            );
-
-            if (className != null)
-                classes.add(loadClass(className));
-
-            File subDirectory = new File(directory, fileName);
-            if (subDirectory.isDirectory()) {
-                processDirectory(
-                    subDirectory,
-                    packageName
-                        + '.'
-                        + fileName,
-                    classes
+                LOGGER.debug(
+                    "FileName '"
+                        + fileName
+                        + "'  =>  class '"
+                        + className
+                        + "'"
                 );
+
+                classes.add(loadClass(className));
+            } else {
+
+                File subDirectory = new File(directory, fileName);
+                if (subDirectory.isDirectory()) {
+                    processDirectory(
+                        subDirectory,
+                        packageName
+                            + '.'
+                            + fileName,
+                        classes
+                    );
+                }
             }
         }
     }
@@ -167,6 +171,24 @@ public class Enumerate
             processJarFile(resourceUrl, packageName, classes);
         } else {
             processDirectory(new File(resourceUrl.getPath()), packageName, classes);
+        }
+
+        return classes;
+    }
+
+
+    public static List<Class<?>> enumerate(String basePackage)
+        throws IOException
+    {
+        String relativePath = basePackage.replace('.', '/');
+
+        Enumeration<URL> urlEnumeration = ClassLoader.getSystemClassLoader().getResources(relativePath);
+
+        List<Class<?>> classes = new ArrayList<>();
+
+        while (urlEnumeration.hasMoreElements()) {
+            URL url = urlEnumeration.nextElement();
+            processDirectory(new File(url.getPath()), basePackage, classes);
         }
 
         return classes;
