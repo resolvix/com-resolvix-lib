@@ -15,7 +15,7 @@ public class EnumerateTest {
     private static final String TEST_PACKAGE = "com.resolvix.lib.reflect";
 
     @Test
-    public void getClassesForPackage() {
+    public void getClassesForPackage() throws IOException {
 
         ClassLoader classLoader = ClassLoader.getSystemClassLoader();
 

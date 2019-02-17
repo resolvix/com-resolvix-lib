@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -41,7 +40,7 @@ public class Enumerate
         String packageName,
         List<Class<?>> classes
     ) {
-        LOGGER.debug("Reading Directory '" + directory + "'");
+        LOGGER.debug("Reading Directory '{}'", directory);
 
         //
         // Get the list of the files contained in the package
@@ -66,13 +65,7 @@ public class Enumerate
                     + '.'
                     + fileName.substring(0, fileName.length() - CLASS_FILE_EXTENSION_LENGTH);
 
-                LOGGER.debug(
-                    "FileName '"
-                        + fileName
-                        + "'  =>  class '"
-                        + className
-                        + "'"
-                );
+                LOGGER.debug("FileName '{}' => class '{}'", fileName, className);
 
                 classes.add(loadClass(className));
             } else {
@@ -91,51 +84,71 @@ public class Enumerate
         }
     }
 
-    /**
-     *
-     * @param resourceUrl
-     * @param packageName
-     * @param classes
-     */
+    private static String packageNameToRelativePath(String packageName) {
+        return packageName.replace('.', '/');
+    }
+
+    private static String resourcePathToJarPath(String resourcePath) {
+        return resourcePath
+            .replaceFirst("[.]jar[!].*", ".jar")
+            .replaceFirst("file:", "");
+    }
+
     private static void processJarFile(
         URL resourceUrl,
         String packageName,
         List<Class<?>> classes
-    ) {
-        String relPath = packageName.replace('.', '/');
-        String resPath = resourceUrl.getPath();
-        String jarPath = resPath.replaceFirst("[.]jar[!].*", ".jar").replaceFirst("file:", "");
+    ) throws IOException {
+        String relativePath = packageNameToRelativePath(packageName);
+        String jarPath = resourcePathToJarPath(resourceUrl.getPath());
 
-        LOGGER.debug("Reading JAR file: '" + jarPath + "'");
+        LOGGER.debug("Reading JAR file: '{}'", jarPath);
 
-        JarFile jarFile;
+        JarFile jarFile = null;
 
         try {
+
+            //
+            //  1.  Open the jar file given by {@code jarPath};
+            //
             jarFile = new JarFile(jarPath);
-        } catch (IOException e) {
-            throw new RuntimeException("Unexpected IOException reading JAR File '" + jarPath + "'", e);
-        }
 
-        Enumeration<JarEntry> jarEntries = jarFile.entries();
+            //
+            //  2.  Enumerate the entries within the jar file;
+            //
+            Enumeration<JarEntry> jarEntries = jarFile.entries();
 
-        while(jarEntries.hasMoreElements()) {
-            JarEntry jarEntry = jarEntries.nextElement();
-            //entry.getAttributes().
-            String entryName = jarEntry.getName();
-            String className = null;
-            if (entryName.endsWith(CLASS_FILE_EXTENSION)) {
-                if (entryName.startsWith(relPath) && entryName.length() > (relPath.length() + "/".length())) {
-                    className = entryName.replace('/', '.')
-                        .replace('\\', '.')
-                        .replace(CLASS_FILE_EXTENSION, "");
+            //
+            //  3.  Iterate through the entries and, where they refer to
+            //      class files, load the class and append it to the list
+            //      of classes;
+            //
+            while(jarEntries.hasMoreElements()) {
+                JarEntry jarEntry = jarEntries.nextElement();
+                //entry.getAttributes().
+                String entryName = jarEntry.getName();
+                String className = null;
+                if (entryName.endsWith(CLASS_FILE_EXTENSION)) {
+                    if (entryName.startsWith(relativePath) && entryName.length() > (relativePath.length() + "/".length())) {
+                        className = entryName.replace('/', '.')
+                            .replace('\\', '.')
+                            .replace(CLASS_FILE_EXTENSION, "");
+                    }
+                }
+
+                LOGGER.debug("JarEntry '{}' => class '{}'", entryName, className);
+
+                if (className != null) {
+                    classes.add(loadClass(className));
                 }
             }
-
-            LOGGER.debug("JarEntry '" + entryName + "'  =>  class '" + className + "'");
-
-            if (className != null) {
-                classes.add(loadClass(className));
-            }
+        } finally {
+            //
+            //  4.  If the jar file was successfully opened, close it on
+            //      processing completion.
+            //
+            if (jarFile != null)
+                jarFile.close();
         }
     }
 
@@ -144,9 +157,9 @@ public class Enumerate
      * @param pkg
      * @return
      */
-    public static List<Class<?>> getClassesForPackage(
-        Package pkg
-    ) {
+    public static List<Class<?>> getClassesForPackage(Package pkg)
+        throws IOException
+    {
         List<Class<?>> classes = new ArrayList<>();
 
         String packageName = pkg.getName();
@@ -154,24 +167,15 @@ public class Enumerate
 
         // Get a File object for the package
         URL resourceUrl = ClassLoader.getSystemClassLoader().getResource(relPath);
-        if (resourceUrl == null) {
+        if (resourceUrl == null)
             throw new RuntimeException("Unexpected problem: No resource for " + relPath);
-        }
 
-        LOGGER.debug(
-            "Package: '"
-                + packageName
-                + "' becomes Resource: '"
-                + resourceUrl.toString()
-                + "'"
-        );
+        LOGGER.debug("Package: '{}' becomes Resource: '{}'", packageName, resourceUrl.toString());
 
-        resourceUrl.getPath();
-        if(resourceUrl.toString().startsWith(JAR_URL_PREFIX)) {
+        if(resourceUrl.toString().startsWith(JAR_URL_PREFIX))
             processJarFile(resourceUrl, packageName, classes);
-        } else {
+        else
             processDirectory(new File(resourceUrl.getPath()), packageName, classes);
-        }
 
         return classes;
     }
