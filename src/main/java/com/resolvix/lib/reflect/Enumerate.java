@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -16,76 +17,86 @@ public class Enumerate
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(Enumerate.class);
 
+    private static final char PACKAGE_SEPARATOR = '.';
+
     private static final String JAR_URL_PREFIX = "jar:";
 
     private static final String CLASS_FILE_EXTENSION = ".class";
 
     private static final int CLASS_FILE_EXTENSION_LENGTH = CLASS_FILE_EXTENSION.length();
 
-    private static Class<?> loadClass(String className) {
-        try {
-            return Class.forName(className);
-        }
+    private static String packageNameToRelativePath(String packageName) {
+        return packageName.replace('.', '/');
+    }
+
+    private static Class<?> loadClass(String packageName, String className)
+        throws ClassNotFoundException {
+        LOGGER.trace("loadClass: packageName '{}', className '{}'", packageName, className);
+        return loadClass(packageName + PACKAGE_SEPARATOR + className);
+    }
+
+    private static Class<?> loadClass(String canonicalName)
+        throws ClassNotFoundException {
+        LOGGER.trace("loadClass: canonicalName '{}'", canonicalName);
+        return Class.forName(canonicalName);
+        /*}
         catch (ClassNotFoundException e) {
             throw new RuntimeException(
                 "Unexpected ClassNotFoundException loading class '"
-                    + className
+                    + canonicalName
                     + "'"
             );
-        }
+        }*/
     }
 
-    private static void processDirectory(
-        File directory,
+    private static void processResource(
+        List<Class<?>> classes,
         String packageName,
-        List<Class<?>> classes
+        File resource
     ) {
-        LOGGER.debug("Reading Directory '{}'", directory);
+        LOGGER.debug("Reading Directory '{}'", resource);
 
         //
-        // Get the list of the files contained in the package
+        //  1.  Get the list of the files referenced by the resource.
         //
-        String[] files = directory.list();
+        String[] files = resource.list();
         if (files == null)
             throw new IllegalStateException();
 
-        for (int i = 0; i < files.length; i++) {
-            String fileName = files[i];
+        //
+        //  2.  For each file referenced by the resource -
+        //
+        for (String file: files) {
+            String fileName = file;
 
             //
-            //  Ignore files that do not have a .class extension: we are only
-            //  interested in Java class files.
+            //  (a) if the file has a '.class' extension, load the class
+            //      and append it to the list of classes; otherwise, treat
+            //      it as a sub-resource and process it recursively if it
+            //      is a directory.
             //
             if (fileName.endsWith(CLASS_FILE_EXTENSION)) {
-
-                //
-                //  Remove the .class extension.
-                //
-                String className = packageName
-                    + '.'
-                    + fileName.substring(0, fileName.length() - CLASS_FILE_EXTENSION_LENGTH);
-
-                LOGGER.debug("FileName '{}' => class '{}'", fileName, className);
-
-                classes.add(loadClass(className));
+                String className = fileName.substring(0, fileName.length() - CLASS_FILE_EXTENSION_LENGTH);
+                try {
+                    classes.add(
+                        loadClass(packageName, className));
+                } catch (ClassNotFoundException e) {
+                    LOGGER.debug("processResource: unexpected 'ClassNotFoundException' raised "
+                        + "when attempting to load '{}.{}'", packageName, className);
+                }
             } else {
-
-                File subDirectory = new File(directory, fileName);
-                if (subDirectory.isDirectory()) {
-                    processDirectory(
-                        subDirectory,
+                File subresource = new File(resource, fileName);
+                if (subresource.isDirectory()) {
+                    processResource(
+                        classes,
                         packageName
                             + '.'
                             + fileName,
-                        classes
+                        subresource
                     );
                 }
             }
         }
-    }
-
-    private static String packageNameToRelativePath(String packageName) {
-        return packageName.replace('.', '/');
     }
 
     private static String resourcePathToJarPath(String resourcePath) {
@@ -102,26 +113,26 @@ public class Enumerate
         String relativePath = packageNameToRelativePath(packageName);
         String jarPath = resourcePathToJarPath(resourceUrl.getPath());
 
-        LOGGER.debug("Reading JAR file: '{}'", jarPath);
+        LOGGER.trace("processJarFile: reading JAR file '{}'", jarPath);
 
         JarFile jarFile = null;
 
         try {
 
             //
-            //  1.  Open the jar file given by {@code jarPath};
+            //  1.  Open the jar file given by {@code jarPath}
             //
             jarFile = new JarFile(jarPath);
 
             //
-            //  2.  Enumerate the entries within the jar file;
+            //  2.  Enumerate the entries within the jar file
             //
             Enumeration<JarEntry> jarEntries = jarFile.entries();
 
             //
             //  3.  Iterate through the entries and, where they refer to
             //      class files, load the class and append it to the list
-            //      of classes;
+            //      of classes
             //
             while(jarEntries.hasMoreElements()) {
                 JarEntry jarEntry = jarEntries.nextElement();
@@ -136,10 +147,15 @@ public class Enumerate
                     }
                 }
 
-                LOGGER.debug("JarEntry '{}' => class '{}'", entryName, className);
+                LOGGER.trace("processJarFile: jarEntry '{}' => class '{}'", entryName, className);
 
                 if (className != null) {
-                    classes.add(loadClass(className));
+                    try {
+                        classes.add(loadClass(className));
+                    } catch (ClassNotFoundException e) {
+                        LOGGER.debug("processJarFile: unexpected 'ClassNotFoundException' raised "
+                            + "when attempting to load '{}'", className);
+                    }
                 }
             }
         } finally {
@@ -152,39 +168,51 @@ public class Enumerate
         }
     }
 
+//    /**
+//     *
+//     * @param pkg
+//     * @return
+//     */
+//    public static List<Class<?>> getClassesForPackage(Package pkg)
+//        throws IOException
+//    {
+//        List<Class<?>> classes = new ArrayList<>();
+//
+//        String packageName = pkg.getName();
+//        String relativePath = packageNameToRelativePath(packageName);
+//
+//        // Get a File object for the package
+//        URL resourceUrl = ClassLoader.getSystemClassLoader().getResource(relativePath);
+//        if (resourceUrl == null)
+//            throw new RuntimeException("Unexpected problem: No resource for " + relativePath);
+//
+//        LOGGER.debug("Package: '{}' becomes Resource: '{}'", packageName, resourceUrl.toString());
+//
+//        if(resourceUrl.toString().startsWith(JAR_URL_PREFIX))
+//            processJarFile(resourceUrl, packageName, classes);
+//        else
+//            processResource(
+//                classes,
+//                packageName,
+//                new File(resourceUrl.getPath()));
+//
+//        return classes;
+//    }
+
     /**
+     * Enumerates, for a given base package, all of the classes contained by
+     * the base package.
      *
-     * @param pkg
-     * @return
+     * @param basePackage the base package name
+     *
+     * @return a list of {@link Class} objects contained by package
+     *
+     * @throws IOException
      */
-    public static List<Class<?>> getClassesForPackage(Package pkg)
+    public static List<Class<?>> getClasses(String basePackage)
         throws IOException
     {
-        List<Class<?>> classes = new ArrayList<>();
-
-        String packageName = pkg.getName();
-        String relPath = packageName.replace('.', '/');
-
-        // Get a File object for the package
-        URL resourceUrl = ClassLoader.getSystemClassLoader().getResource(relPath);
-        if (resourceUrl == null)
-            throw new RuntimeException("Unexpected problem: No resource for " + relPath);
-
-        LOGGER.debug("Package: '{}' becomes Resource: '{}'", packageName, resourceUrl.toString());
-
-        if(resourceUrl.toString().startsWith(JAR_URL_PREFIX))
-            processJarFile(resourceUrl, packageName, classes);
-        else
-            processDirectory(new File(resourceUrl.getPath()), packageName, classes);
-
-        return classes;
-    }
-
-
-    public static List<Class<?>> enumerate(String basePackage)
-        throws IOException
-    {
-        String relativePath = basePackage.replace('.', '/');
+        String relativePath = packageNameToRelativePath(basePackage);
 
         Enumeration<URL> urlEnumeration = ClassLoader.getSystemClassLoader().getResources(relativePath);
 
@@ -192,7 +220,16 @@ public class Enumerate
 
         while (urlEnumeration.hasMoreElements()) {
             URL url = urlEnumeration.nextElement();
-            processDirectory(new File(url.getPath()), basePackage, classes);
+
+            try {
+                File resource = new File(url.toURI());
+                processResource(
+                    classes,
+                    basePackage,
+                    resource);
+            } catch (URISyntaxException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         return classes;
