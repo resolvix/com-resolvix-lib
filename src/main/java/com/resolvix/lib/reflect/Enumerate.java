@@ -17,6 +17,8 @@ public class Enumerate
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(Enumerate.class);
 
+    private static final char FILE_EXTENSION_SEPARATOR = '.';
+
     private static final char PACKAGE_SEPARATOR = '.';
 
     private static final String JAR_URL_PREFIX = "jar:";
@@ -39,14 +41,14 @@ public class Enumerate
         throws ClassNotFoundException {
         LOGGER.trace("loadClass: canonicalName '{}'", canonicalName);
         return Class.forName(canonicalName);
-        /*}
-        catch (ClassNotFoundException e) {
-            throw new RuntimeException(
-                "Unexpected ClassNotFoundException loading class '"
-                    + canonicalName
-                    + "'"
-            );
-        }*/
+    }
+
+    private static String getExtension(String fileName) {
+        int index = fileName.indexOf(FILE_EXTENSION_SEPARATOR);
+        if (index == -1)
+            return null;
+
+        return fileName.substring(index);
     }
 
     private static void processResource(
@@ -59,41 +61,53 @@ public class Enumerate
         //
         //  1.  Get the list of the files referenced by the resource.
         //
-        String[] files = resource.list();
-        if (files == null)
+        String[] fileNames = resource.list();
+        if (fileNames == null)
             throw new IllegalStateException();
 
         //
         //  2.  For each file referenced by the resource -
         //
-        for (String file: files) {
-            String fileName = file;
+        //      (a) if the file has a '.class' extension, load the class
+        //          and append it to the list of classes; otherwise, treat
+        //          it as a sub-resource and process it recursively if it
+        //          is a directory.
+        //
+        for (String fileName: fileNames) {
 
-            //
-            //  (a) if the file has a '.class' extension, load the class
-            //      and append it to the list of classes; otherwise, treat
-            //      it as a sub-resource and process it recursively if it
-            //      is a directory.
-            //
-            if (fileName.endsWith(CLASS_FILE_EXTENSION)) {
-                String className = fileName.substring(0, fileName.length() - CLASS_FILE_EXTENSION_LENGTH);
-                try {
-                    classes.add(
-                        loadClass(packageName, className));
-                } catch (ClassNotFoundException e) {
-                    LOGGER.debug("processResource: unexpected 'ClassNotFoundException' raised "
-                        + "when attempting to load '{}.{}'", packageName, className);
-                }
-            } else {
+            String extension = getExtension(fileName);
+            if (extension == null) {
                 File subresource = new File(resource, fileName);
                 if (subresource.isDirectory()) {
                     processResource(
                         classes,
                         packageName
-                            + '.'
+                            + PACKAGE_SEPARATOR
                             + fileName,
                         subresource
                     );
+                }
+            } else {
+                switch (extension) {
+                    case CLASS_FILE_EXTENSION:
+                        File subresource = new File(resource, fileName);
+                        if (subresource.isFile()) {
+                            String className = fileName.substring(0, fileName.length() - CLASS_FILE_EXTENSION_LENGTH);
+                            try {
+                                classes.add(
+                                    loadClass(packageName, className));
+                            } catch (ClassNotFoundException e) {
+                                LOGGER.debug(
+                                    "processResource: unexpected 'ClassNotFoundException' raised "
+                                        + "when attempting to load '{}.{}'",
+                                    packageName, className);
+                            }
+                        }
+
+                        break;
+
+                    default:
+                        break;
                 }
             }
         }
@@ -153,8 +167,10 @@ public class Enumerate
                     try {
                         classes.add(loadClass(className));
                     } catch (ClassNotFoundException e) {
-                        LOGGER.debug("processJarFile: unexpected 'ClassNotFoundException' raised "
-                            + "when attempting to load '{}'", className);
+                        LOGGER.debug(
+                            "processJarFile: unexpected 'ClassNotFoundException' raised "
+                                + "when attempting to load '{}'",
+                            className);
                     }
                 }
             }
@@ -167,37 +183,6 @@ public class Enumerate
                 jarFile.close();
         }
     }
-
-//    /**
-//     *
-//     * @param pkg
-//     * @return
-//     */
-//    public static List<Class<?>> getClassesForPackage(Package pkg)
-//        throws IOException
-//    {
-//        List<Class<?>> classes = new ArrayList<>();
-//
-//        String packageName = pkg.getName();
-//        String relativePath = packageNameToRelativePath(packageName);
-//
-//        // Get a File object for the package
-//        URL resourceUrl = ClassLoader.getSystemClassLoader().getResource(relativePath);
-//        if (resourceUrl == null)
-//            throw new RuntimeException("Unexpected problem: No resource for " + relativePath);
-//
-//        LOGGER.debug("Package: '{}' becomes Resource: '{}'", packageName, resourceUrl.toString());
-//
-//        if(resourceUrl.toString().startsWith(JAR_URL_PREFIX))
-//            processJarFile(resourceUrl, packageName, classes);
-//        else
-//            processResource(
-//                classes,
-//                packageName,
-//                new File(resourceUrl.getPath()));
-//
-//        return classes;
-//    }
 
     /**
      * Enumerates, for a given base package, all of the classes contained by
