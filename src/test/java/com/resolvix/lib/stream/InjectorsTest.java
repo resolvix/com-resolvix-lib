@@ -149,7 +149,7 @@ public class InjectorsTest
     }
 
     @Test
-    public void injectIntoStream() {
+    public void injectAsStream() {
 
         Function<Stream<X>, List<X>> streamProcessor = (Stream<X> streamX) -> {
             return streamX
