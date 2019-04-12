@@ -59,77 +59,77 @@ public class ObjectReferenceShould
     @Test
     public void compareToNeitherDependentUponEachOther() {
         assertThat(
-            objRefA.compareTo(objRefB),
+            ObjectReference.compareDependencies(objRefA, objRefB),
             equalTo(0));
 
         assertThat(
-            objRefB.compareTo(objRefA),
+            ObjectReference.compareDependencies(objRefB, objRefA),
             equalTo(0));
     }
 
     @Test
     public void compareToDirectlyDependentUponEachOther() {
         assertThat(
-            objRefC.compareTo(objRefA),
+            ObjectReference.compareDependencies(objRefC, objRefA),
             greaterThanOrEqualTo(1));
 
         assertThat(
-            objRefD.compareTo(objRefC),
+            ObjectReference.compareDependencies(objRefD, objRefC),
             greaterThanOrEqualTo(1));
 
         assertThat(
-            objRefD.compareTo(objRefB),
+            ObjectReference.compareDependencies(objRefD, objRefB),
             greaterThanOrEqualTo(1));
 
         assertThat(
-            objRefE.compareTo(objRefD),
+            ObjectReference.compareDependencies(objRefE, objRefD),
             greaterThanOrEqualTo(1));
     }
 
     @Test
     public void compareToIsDependedUponByTheOther() {
         assertThat(
-            objRefA.compareTo(objRefC),
+            ObjectReference.compareDependencies(objRefA, objRefC),
             lessThanOrEqualTo(-1));
 
         assertThat(
-            objRefB.compareTo(objRefD),
+            ObjectReference.compareDependencies(objRefB, objRefD),
             lessThanOrEqualTo(-1));
     }
 
     @Test
     public void compareToIsIndirectlyDependentOnTheOther() {
         assertThat(
-            objRefA.compareTo(objRefE),
+            ObjectReference.compareDependencies(objRefA, objRefE),
             equalTo(0));
 
         assertThat(
-            objRefB.compareTo(objRefE),
+            ObjectReference.compareDependencies(objRefB, objRefE),
             equalTo(0));
 
         objRefE.addDependency("A", 1);
         objRefE.addDependency("B", 1);
 
         assertThat(
-            objRefA.compareTo(objRefE),
+            ObjectReference.compareDependencies(objRefA, objRefE),
             lessThanOrEqualTo(-1));
 
         assertThat(
-            objRefB.compareTo(objRefE),
+            ObjectReference.compareDependencies(objRefB, objRefE),
             lessThanOrEqualTo(-1));
     }
 
     @Test(expected = IllegalStateException.class)
     public void compareToAreCodependentOne() {
         assertThat(
-            objRefF.compareTo(objRefG),
+            ObjectReference.compareDependencies(objRefF, objRefG),
             greaterThanOrEqualTo(0));
     }
 
     @Test(expected = IllegalStateException.class)
     public void compareToAreCodependentTwo() {
         assertThat(
-            objRefG.compareTo(objRefF),
+            ObjectReference.compareDependencies(objRefG, objRefF),
             greaterThanOrEqualTo(0));
     }
 }
