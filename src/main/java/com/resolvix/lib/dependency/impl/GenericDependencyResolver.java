@@ -15,15 +15,6 @@ public class GenericDependencyResolver {
         //
     }
 
-    private static class ObjectReferenceComparator<K, T>
-        implements Comparator<ObjectReference<K, T>>
-    {
-        @Override
-        public int compare(ObjectReference<K, T> o1, ObjectReference<K, T> o2) {
-            return o1.compareTo(o2);
-        }
-    }
-
     private static class LocalDependencyResolver<K, T> {
 
         private Map<K, ObjectReference<K, T>> map;
@@ -111,7 +102,7 @@ public class GenericDependencyResolver {
             localDependencyResolver.traceDependencies(maplet.getValue());
 
         objectReferences.sort(
-            new ObjectReferenceComparator<>());
+            ObjectReference::compareDependencies);
 
         @SuppressWarnings("unchecked")
         T[] tsResult = (T[]) Array.newInstance(classT, ts.length);
