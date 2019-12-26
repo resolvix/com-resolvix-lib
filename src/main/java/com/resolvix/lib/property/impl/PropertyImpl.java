@@ -17,9 +17,20 @@ public class PropertyImpl<P, T>
         this.value = value;
     }
 
+    protected PropertyImpl(Property<P, T> property) {
+        this.id = property.getId();
+        this.classT = property.getType();
+        this.value = property.getValue();
+    }
+
     public static <Q, U> Property<Q, U> of(
             Q id, Class<U> classU, U value) {
         return new PropertyImpl<>(id, classU, value);
+    }
+
+    public static <Q, U> Property<Q, U> of(
+            Property<Q, U> property) {
+        return new PropertyImpl(property);
     }
 
     @Override

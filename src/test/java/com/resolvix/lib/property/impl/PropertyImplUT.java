@@ -16,11 +16,39 @@ public class PropertyImplUT {
     public ExpectedException thrown = ExpectedException.none();
 
     @Test
-    public void testPropertyOf() {
+    public void testOfIdTypeValue() {
         Property<String, String> property = PropertyImpl.of("id", String.class, "value");
         assertThat(property, allOf(
             hasProperty("id", equalTo("id")),
             hasProperty("type", equalTo(String.class)),
             hasProperty("value", equalTo("value"))));
     }
+
+    @Test
+    public void testOfProperty() {
+        Property<String, String> property = PropertyImpl.of(
+                new Property<String, String>() {
+
+                    @Override
+                    public String getId() {
+                        return "id";
+                    }
+
+                    @Override
+                    public Class<String> getType() {
+                        return String.class;
+                    }
+
+                    @Override
+                    public String getValue() {
+                        return "value";
+                    }
+                }
+            );
+        assertThat(property, allOf(
+                hasProperty("id", equalTo("id")),
+                hasProperty("type", equalTo(String.class)),
+                hasProperty("value", equalTo("value"))));
+    }
+
 }

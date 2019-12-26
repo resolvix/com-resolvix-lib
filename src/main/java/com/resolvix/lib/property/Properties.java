@@ -9,4 +9,9 @@ public class Properties {
             Q id, Class<U> classU, U value) {
         return PropertyImpl.of(id, classU, value);
     }
+
+    public static <Q, U> Property<Q, U> property(
+            Property<Q, U> property) {
+        return PropertyImpl.of(property);
+    }
 }
