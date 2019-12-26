@@ -1,7 +1,5 @@
 package com.resolvix.lib.property.api;
 
-import com.google.common.collect.TreeTraverser;
-
 /**
  * Defines an interface for a property associated with a class or entity
  * instance.
