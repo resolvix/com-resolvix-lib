@@ -1,4 +1,4 @@
-package com.resolvix.lib.property;
+package com.resolvix.lib.property.impl;
 
 import com.resolvix.lib.property.api.Property;
 
