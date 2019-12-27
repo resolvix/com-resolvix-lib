@@ -28,5 +28,5 @@ public interface PropertyReader<P> {
      * @param <T> the property value type
      * @return the property, if present; {@code defaultProperty}, otherwise
      */
-    <T> Property<P, T> getOrDefaultProperty(P id, Property<P, T> defaultProperty);
+    <T> Property<P, T> getPropertyOrDefault(P id, Property<P, T> defaultProperty);
 }

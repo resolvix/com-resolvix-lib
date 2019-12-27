@@ -28,7 +28,7 @@ public abstract class BaseEntityImpl<P>
     }
 
     @Override
-    public <T> Property<P, T> getOrDefaultProperty(P id, Property<P, T> defaultProperty) {
+    public <T> Property<P, T> getPropertyOrDefault(P id, Property<P, T> defaultProperty) {
         return (Property<P, T>) properties.getOrDefault(id, defaultProperty);
     }
 
