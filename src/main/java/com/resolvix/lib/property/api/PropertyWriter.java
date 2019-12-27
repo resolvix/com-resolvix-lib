@@ -19,6 +19,17 @@ public interface PropertyWriter<P> {
     <T> void setProperty(P id, T value);
 
     /**
+     * Associates {@code value} with the property given by {@code id} with
+     * the relevant class or entity instance.
+     *
+     * @param id the property identifier
+     * @param classT the property value type
+     * @param value the property value
+     * @param <T> the property value type
+     */
+    <T> void setProperty(P id, Class<T> classT, T value);
+
+    /**
      * Associates the property, given by {@code property}, with the relevant
      * class or entity instance.
      *
