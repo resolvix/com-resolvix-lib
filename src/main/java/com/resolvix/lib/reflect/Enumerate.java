@@ -27,20 +27,24 @@ public class Enumerate
 
     private static final int CLASS_FILE_EXTENSION_LENGTH = CLASS_FILE_EXTENSION.length();
 
+    private static final String URL_PROTOCOL_FILE = "file";
+
+    private static final String URL_PROTOCOL_JAR = "jar";
+
     private static String packageNameToRelativePath(String packageName) {
         return packageName.replace('.', '/');
     }
 
-    private static Class<?> loadClass(String packageName, String className)
+    private static Class<?> loadClass(ClassLoader classLoader, String packageName, String className)
         throws ClassNotFoundException {
         LOGGER.trace("loadClass: packageName '{}', className '{}'", packageName, className);
-        return loadClass(packageName + PACKAGE_SEPARATOR + className);
+        return loadClass(classLoader, packageName + PACKAGE_SEPARATOR + className);
     }
 
-    private static Class<?> loadClass(String canonicalName)
+    private static Class<?> loadClass(ClassLoader classLoader, String canonicalName)
         throws ClassNotFoundException {
         LOGGER.trace("loadClass: canonicalName '{}'", canonicalName);
-        return Class.forName(canonicalName);
+        return classLoader.loadClass(canonicalName);
     }
 
     private static String getExtension(String fileName) {
@@ -52,10 +56,11 @@ public class Enumerate
     }
 
     private static void processDirectoryResource(
-        List<Class<?>> classes,
-        String packageName,
-        File resource
-    ) {
+            ClassLoader classLoader,
+            List<Class<?>> classes,
+            String packageName,
+            File resource)
+    {
         LOGGER.debug("Reading Directory '{}'", resource);
 
         //
@@ -74,18 +79,17 @@ public class Enumerate
         //          is a directory.
         //
         for (String fileName: fileNames) {
-
             String extension = getExtension(fileName);
             if (extension == null) {
                 File subresource = new File(resource, fileName);
                 if (subresource.isDirectory()) {
                     processDirectoryResource(
-                        classes,
-                        packageName
-                            + PACKAGE_SEPARATOR
-                            + fileName,
-                        subresource
-                    );
+                            classLoader,
+                            classes,
+                            packageName
+                                + PACKAGE_SEPARATOR
+                                + fileName,
+                            subresource);
                 }
             } else {
                 switch (extension) {
@@ -95,7 +99,7 @@ public class Enumerate
                             String className = fileName.substring(0, fileName.length() - CLASS_FILE_EXTENSION_LENGTH);
                             try {
                                 classes.add(
-                                    loadClass(packageName, className));
+                                    loadClass(classLoader, packageName, className));
                             } catch (ClassNotFoundException e) {
                                 LOGGER.debug(
                                     "processResource: unexpected 'ClassNotFoundException' raised "
@@ -120,10 +124,11 @@ public class Enumerate
     }
 
     private static void processJarEntry(
-        List<Class<?>> classes,
-        String packagePath,
-        JarEntry jarEntry
-    ) {
+            ClassLoader classLoader,
+            List<Class<?>> classes,
+            String packagePath,
+            JarEntry jarEntry)
+    {
         String entryName = jarEntry.getName();
         String className = null;
         if (entryName.endsWith(CLASS_FILE_EXTENSION)) {
@@ -138,7 +143,7 @@ public class Enumerate
 
         if (className != null) {
             try {
-                classes.add(loadClass(className));
+                classes.add(loadClass(classLoader, className));
             } catch (ClassNotFoundException e) {
                 LOGGER.debug(
                     "processJarFile: unexpected 'ClassNotFoundException' raised "
@@ -149,10 +154,12 @@ public class Enumerate
     }
 
     private static void processJarFileResource(
-        List<Class<?>> classes,
-        String packageName,
-        JarFile jarFile
-    ) throws IOException {
+            ClassLoader classLoader,
+            List<Class<?>> classes,
+            String packageName,
+            JarFile jarFile)
+        throws IOException
+    {
         LOGGER.trace("processJarFileResource: reading JAR file '{}'", jarFile.getName());
 
         //
@@ -169,9 +176,10 @@ public class Enumerate
         while(jarEntries.hasMoreElements()) {
             JarEntry jarEntry = jarEntries.nextElement();
             processJarEntry(
-                classes,
-                packagePath,
-                jarEntry);
+                    classLoader,
+                    classes,
+                    packagePath,
+                    jarEntry);
         }
 
         //
@@ -190,13 +198,29 @@ public class Enumerate
     }
 
     /**
+     * Enumerates, for a given JAR file, all of the classes contained in
+     * that JAR file.
+     *
+     * @param jarFile the {@link File} object containing the name of
+     *  the JAR file
+     * @return the list of {@link Class} objects contained in the JAR
+     *  file
+     * @throws IOException
+     */
+    public static List<Class<?>> getClasses(File jarFile)
+        throws IOException
+    {
+        List<Class<?>> classes = new ArrayList<>();
+
+        return classes;
+    }
+
+    /**
      * Enumerates, for a given base package, all of the classes contained in
-     * the base package.
+     * that base package.
      *
      * @param basePackage the base package name
-     *
-     * @return a list of {@link Class} objects contained by package
-     *
+     * @return the list of {@link Class} objects contained in the package
      * @throws IOException
      */
     public static List<Class<?>> getClasses(String basePackage)
@@ -205,6 +229,8 @@ public class Enumerate
         String relativePath = packageNameToRelativePath(basePackage);
 
         Enumeration<URL> urlEnumeration = ClassLoader.getSystemClassLoader().getResources(relativePath);
+
+        ClassLoader classLoader = new ClassLoader() { };
 
         List<Class<?>> classes = new ArrayList<>();
 
@@ -215,19 +241,21 @@ public class Enumerate
 
             File file = toFile(url);
             switch (url.getProtocol()) {
-                case "file":
+                case URL_PROTOCOL_FILE:
                     processDirectoryResource(
-                        classes,
-                        basePackage,
-                        file);
+                            classLoader,
+                            classes,
+                            basePackage,
+                            file);
                     break;
 
-                case "jar":
+                case URL_PROTOCOL_JAR:
                     JarFile jarFile = new JarFile(file);
                     processJarFileResource(
-                        classes,
-                        basePackage,
-                        jarFile);
+                            classLoader,
+                            classes,
+                            basePackage,
+                            jarFile);
                     break;
             }
         }
