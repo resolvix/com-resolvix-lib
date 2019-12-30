@@ -1,8 +1,8 @@
 package com.resolvix.lib.reflect.jar;
 
-public class JarFileTest {
+public class JarFileClass {
 
-    public JarFileTest() {
+    public JarFileClass() {
         //
     }
 }
