@@ -1,11 +1,9 @@
 package com.resolvix.lib.list;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
