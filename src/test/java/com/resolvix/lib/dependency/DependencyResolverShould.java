@@ -20,37 +20,24 @@ public class DependencyResolverShould {
     private @interface DependsOn {
 
         Class<?>[] value() default {};
-
     }
 
     @DependsOn({F.class, E.class})
-    private class A {
-
-    }
+    private class A { }
 
     @DependsOn(A.class)
-    private class B {
-
-    }
+    private class B { }
 
     @DependsOn({D.class, B.class})
-    private class C {
+    private class C { }
 
-    }
-
-    private class D {
-
-    }
+    private class D { }
 
     @DependsOn(F.class)
-    private class E {
-
-    }
+    private class E { }
 
     @DependsOn(D.class)
-    private class F {
-
-    }
+    private class F { }
 
     @Test
     public void resolveDependenciesShouldCorrectlyResolveWellFormedDependencies()
