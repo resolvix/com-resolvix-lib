@@ -34,11 +34,23 @@ public class WeakReferenceUtilsUT {
 
     private static final WeakReference<BigDecimal> WEAK_REFERENCE_ONE = new WeakReference<>(ONE);
 
+    @SuppressWarnings("unused")
+    private static final WeakReference<BigDecimal> WEAK_REFERENCE_TWO = new WeakReference<>(TWO);
+
     private static final WeakReference<BigDecimal> WEAK_REFERENCE_THREE = new WeakReference<>(THREE);
+
+    @SuppressWarnings("unused")
+    private static final WeakReference<BigDecimal> WEAK_REFERENCE_FOUR = new WeakReference<>(FOUR);
 
     private static final WeakReference<BigDecimal> WEAK_REFERENCE_FIVE = new WeakReference<>(FIVE);
 
+    @SuppressWarnings("unused")
+    private static final WeakReference<BigDecimal> WEAK_REFERENCE_SIX = new WeakReference<>(SIX);
+
     private static final WeakReference<BigDecimal> WEAK_REFERENCE_SEVEN = new WeakReference<>(SEVEN);
+
+    @SuppressWarnings("unused")
+    private static final WeakReference<BigDecimal> WEAK_REFERENCE_EIGHT = new WeakReference<>(EIGHT);
 
     private static final WeakReference<BigDecimal> WEAK_REFERENCE_NINE = new WeakReference<>(NINE);
 
