@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
-import javax.naming.NamingException;
+import javax.naming.NameNotFoundException;
 import javax.sql.DataSource;
 
 import static org.hamcrest.Matchers.*;
@@ -27,7 +27,7 @@ public class JndiUtilsUT {
         Context rootContext = new InitialContext();
         Context compContext = rootContext.createSubcontext("comp");
         Context envContext = compContext.createSubcontext("env");
-        envContext.bind("readOnly", true);
+        envContext.bind("testValue", true);
         Context jdbcContext = envContext.createSubcontext("jdbc");
         LOGGER.debug("InitialContext = {}", rootContext);
     }
@@ -121,7 +121,7 @@ public class JndiUtilsUT {
 
     @Test
     public void getContextCompEnvJdbcFailure() throws Exception {
-        expectedException.expect(NamingException.class);
+        expectedException.expect(NameNotFoundException.class);
         Context context = Whitebox.invokeMethod(
             JndiUtils.class, "getContext", "java:comp/env/jdbc/failure");
         assertThat(context, instanceOf(Context.class));
@@ -138,5 +138,24 @@ public class JndiUtilsUT {
         assertThat(
             JndiUtils.lookup("java:comp/env/jdbc/dataSource", DataSource.class),
             sameInstance(dataSource));
+    }
+
+    //
+    //  lookup
+    //
+
+    @Test
+    public void lookupCompEnvTestValue() throws Exception {
+        assertThat(
+            JndiUtils.lookup("java:comp/env/testValue", boolean.class),
+            equalTo(true));
+    }
+
+    @Test
+    public void lookupCompEnvNotPresentValue() throws Exception {
+        expectedException.expect(NameNotFoundException.class);
+        assertThat(
+            JndiUtils.lookup("java:comp/env/notPresentValue", boolean.class),
+            nullValue());
     }
 }

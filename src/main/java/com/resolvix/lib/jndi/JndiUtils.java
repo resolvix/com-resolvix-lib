@@ -90,10 +90,8 @@ public class JndiUtils {
     public static <T> T lookup(String compoundName, Class<T> classT) throws NamingException {
         String namespace = getNamespace(compoundName);
         Context context = getContext(namespace);
-        if (context != null) {
-            String name = getName(compoundName);
-            return (T) context.lookup(name);
-        } else
-            return null;
+        assert (context != null);
+        String name = getName(compoundName);
+        return (T) context.lookup(name);
     }
 }
