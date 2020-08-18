@@ -13,6 +13,10 @@ public class CryptoUtils {
 
     private static final String SHA512 = "SHA-512";
 
+    private CryptoUtils() {
+        //
+    }
+
     private static String toString(byte[] digest) {
         StringBuilder sb = new StringBuilder();
         for (byte b : digest)
