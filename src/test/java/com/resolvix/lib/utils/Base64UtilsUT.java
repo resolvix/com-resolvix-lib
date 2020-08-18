@@ -16,7 +16,7 @@ public class Base64UtilsUT {
     //
 
     @Test
-    public void toEncodedFromEncodedByteArrayRFC4648_BASIC() {
+    public void toEncodedFromEncodedByteArrayRfc4648Basic() {
         assertThat(
             Base64Utils.fromEncodedByteArray(
                 Base64Utils.toEncodedByteArray(byteArray, Base64Utils.EncodingScheme.RFC4648_BASIC),
@@ -25,7 +25,7 @@ public class Base64UtilsUT {
     }
 
     @Test
-    public void toEncodedFromEncodedStringRFC4648_BASIC() {
+    public void toEncodedFromEncodedStringRfc4648Basic() {
         assertThat(
             Base64Utils.fromEncodedString(
                 Base64Utils.toEncodedString(byteArray, Base64Utils.EncodingScheme.RFC4648_BASIC),
@@ -38,7 +38,7 @@ public class Base64UtilsUT {
     //
 
     @Test
-    public void toEncodedFromEncodedByteArrayRFC4648_URL_FILE_SAFE() {
+    public void toEncodedFromEncodedByteArrayRfc4648UrlFileSafe() {
         assertThat(
             Base64Utils.fromEncodedByteArray(
                 Base64Utils.toEncodedByteArray(byteArray, Base64Utils.EncodingScheme.RFC4648_URL_FILE_SAFE),
@@ -47,7 +47,7 @@ public class Base64UtilsUT {
     }
 
     @Test
-    public void toEncodedFromEncodedStringRFC4648_URL_FILE_SAFE() {
+    public void toEncodedFromEncodedStringRfc4648UrlFileSafe() {
         assertThat(
             Base64Utils.fromEncodedString(
                 Base64Utils.toEncodedString(byteArray, Base64Utils.EncodingScheme.RFC4648_URL_FILE_SAFE),
@@ -60,7 +60,7 @@ public class Base64UtilsUT {
     //
 
     @Test
-    public void toEncodedFromEncodedByteArrayRFC2045_MIME() {
+    public void toEncodedFromEncodedByteArrayRfc2045Mime() {
         assertThat(
             Base64Utils.fromEncodedByteArray(
                 Base64Utils.toEncodedByteArray(byteArray, Base64Utils.EncodingScheme.RFC2045_MIME),
@@ -69,7 +69,7 @@ public class Base64UtilsUT {
     }
 
     @Test
-    public void toEncodedFromEncodedStringRFC2045_MIME() {
+    public void toEncodedFromEncodedStringRfc2045Mime() {
         assertThat(
             Base64Utils.fromEncodedString(
                 Base64Utils.toEncodedString(byteArray, Base64Utils.EncodingScheme.RFC2045_MIME),
