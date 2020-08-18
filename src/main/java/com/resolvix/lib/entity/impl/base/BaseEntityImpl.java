@@ -48,7 +48,7 @@ public abstract class BaseEntityImpl<P>
     }
 
     @Override
-    public <T> void unsetProperty(P id) {
+    public void unsetProperty(P id) {
         properties.remove(id);
     }
 }
