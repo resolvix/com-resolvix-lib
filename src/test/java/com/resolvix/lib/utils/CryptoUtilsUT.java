@@ -1,12 +1,17 @@
 package com.resolvix.lib.utils;
 
-import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.powermock.reflect.Whitebox;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 public class CryptoUtilsUT {
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
     @Test
     public void toMD5() {
@@ -36,8 +41,11 @@ public class CryptoUtilsUT {
             equalTo("2c74fd17edafd80e8447b0d46741ee243b7eb74dd2149a0ab1b9246fb30382f27e853d8585719e0e67cbda0daa8f51671064615d645ae27acb15bfb1447f459b"));
     }
 
-    @Test @Ignore
-    public void toDigest() {
-
+    @Test
+    public void toDigest() throws Exception {
+        expectedException.expect(IllegalStateException.class);
+        Whitebox.invokeMethod(
+            CryptoUtils.class, "toDigest",
+            "Hello World".getBytes(), "XXX");
     }
 }
