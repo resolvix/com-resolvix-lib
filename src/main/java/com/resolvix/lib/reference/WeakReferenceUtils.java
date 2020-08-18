@@ -2,11 +2,14 @@ package com.resolvix.lib.reference;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
 
 public class WeakReferenceUtils {
+
+    private WeakReferenceUtils() {
+        //
+    }
 
     public static <T> List<WeakReference<T>> compact(Iterable<WeakReference<T>> iterable) {
         List<WeakReference<T>> ls = new ArrayList<>();
@@ -19,9 +22,7 @@ public class WeakReferenceUtils {
     }
 
     public static <T> WeakReference<T> find(Iterable<WeakReference<T>> iterable, T t) {
-        Iterator<WeakReference<T>> it = iterable.iterator();
-        while (it.hasNext()) {
-            WeakReference<T> weakReference = it.next();
+        for (WeakReference<T> weakReference : iterable) {
             T tt = weakReference.get();
             if (t.equals(tt))
                 return weakReference;
