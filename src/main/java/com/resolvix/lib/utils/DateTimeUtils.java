@@ -10,6 +10,8 @@ public class DateTimeUtils {
 
     private static final int NO_OF_SECONDS_PER_MINUTE = 60;
 
+    private static final int NO_OF_NANOSECONDS_PER_MILLISECOND = 1_000_000;
+
     private DateTimeUtils() {
         //
     }
@@ -21,11 +23,18 @@ public class DateTimeUtils {
         xmlGregorianCalendar.setDay(localDate.getDayOfMonth());
     }
 
-    private static void setTime(XMLGregorianCalendar xmlGregorianCalendar, LocalTime localTime) {
+    private static void setTime(
+        XMLGregorianCalendar xmlGregorianCalendar, LocalTime localTime, boolean includeMilliseconds) {
         assert localTime != null;
+
         xmlGregorianCalendar.setTime(
-            localTime.getHour(), localTime.getMinute(), localTime.getSecond(),
-            BigDecimal.valueOf(localTime.getNano()));
+            localTime.getHour(), localTime.getMinute(), localTime.getSecond());
+        if (!includeMilliseconds)
+            return;
+
+        int milliseconds = localTime.getNano() / NO_OF_NANOSECONDS_PER_MILLISECOND;
+        xmlGregorianCalendar.setFractionalSecond(
+            BigDecimal.valueOf(milliseconds, 3));
     }
 
     private static void setOffset(
@@ -38,7 +47,7 @@ public class DateTimeUtils {
     }
 
     public static XMLGregorianCalendar toXMLGregorianCalendar(
-        LocalDate localDate, LocalTime localTime, ZoneId zoneId)
+        LocalDate localDate, LocalTime localTime, ZoneId zoneId, boolean includeMilliseconds)
         throws DatatypeConfigurationException
     {
         DatatypeFactory datatypeFactory = DatatypeFactory.newInstance();
@@ -47,7 +56,7 @@ public class DateTimeUtils {
             setDate(xmlGregorianCalendar, localDate);
 
         if (localTime != null)
-            setTime(xmlGregorianCalendar, localTime);
+            setTime(xmlGregorianCalendar, localTime, includeMilliseconds);
 
         if (zoneId != null)
             setOffset(xmlGregorianCalendar, localDate, localTime, zoneId);
