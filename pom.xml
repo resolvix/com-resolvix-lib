@@ -20,6 +20,17 @@
 
     </properties>
 
+    <distributionManagement>
+        <repository>
+            <id>${release-repository.id}</id>
+            <url>${release-repository.url}</url>
+        </repository>
+        <snapshotRepository>
+            <id>${snapshot-repository.id}</id>
+            <url>${snapshot-repository.url}</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <dependencies>
 
         <!-- Project dependencies -->
