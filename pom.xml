@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.resolvix</groupId>
         <artifactId>com-resolvix-parent-pom</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>0.0.1</version>
     </parent>
 
     <artifactId>com-resolvix-lib</artifactId>
@@ -82,4 +82,11 @@
     <build>
 
     </build>
+
+    <scm>
+      <connection>scm:git:ssh://git@github.com:resolvix/com-resolvix-lib.git</connection>
+      <url>scm:git:https://github.com/resolvix/com-resolvix-lib.git</url>
+      <developerConnection>scm:git:https://github.com/resolvix/com-resolvix-lib.git</developerConnection>
+      <tag>HEAD</tag>
+    </scm>
 </project>
