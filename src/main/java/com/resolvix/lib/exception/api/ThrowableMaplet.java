@@ -2,23 +2,23 @@ package com.resolvix.lib.exception.api;
 
 import java.util.function.Function;
 
-public class ThrowableMaplet<E extends Throwable> {
+public class ThrowableMaplet<E extends Throwable, R> {
 
     private Class<E> throwableClass;
 
-    private Function<E, String> throwableTransformer;
+    private Function<E, R> throwableTransformer;
 
     private ThrowableMaplet(
         Class<E> throwableClass,
-        Function<E, String> throwableTransformer
+        Function<E, R> throwableTransformer
     ) {
         this.throwableClass = throwableClass;
         this.throwableTransformer = throwableTransformer;
     }
 
-    public static <E extends Throwable> ThrowableMaplet<E> of(
+    public static <E extends Throwable, R> ThrowableMaplet<E, R> of(
         Class<E> throwableClass,
-        Function<E, String> throwableTransformer
+        Function<E, R> throwableTransformer
     ) {
         return new ThrowableMaplet<>(
             throwableClass,
@@ -29,7 +29,7 @@ public class ThrowableMaplet<E extends Throwable> {
         return throwableClass;
     }
 
-    public Function<E, String> getThrowableTransform() {
+    public Function<E, R> getThrowableTransform() {
         return throwableTransformer;
     }
 }

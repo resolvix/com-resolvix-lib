@@ -9,31 +9,31 @@ import java.util.function.Function;
 
 public class ThrowableMap {
 
-    protected Map<Class<? extends Throwable>, Function<? extends Throwable, String>> map;
+    protected Map<Class<? extends Throwable>, Function<? extends Throwable, ?>> map;
 
     private ThrowableMap(
-        Map<Class<? extends Throwable>, Function<? extends Throwable, String>> map
+        Map<Class<? extends Throwable>, Function<? extends Throwable, ?>> map
     ) {
         this.map = map;
     }
 
     public static ThrowableMap of(
-        List<ThrowableMaplet<?>> serviceExceptionMaplets
+        List<ThrowableMaplet<? extends Throwable, ?>> serviceExceptionMaplets
     ) {
-        Map<Class<? extends Throwable>, Function<? extends Throwable, String>> map
+        Map<Class<? extends Throwable>, Function<? extends Throwable, ?>> map
             = new HashMap<>();
         serviceExceptionMaplets
-            .forEach((ThrowableMaplet<?> m) ->
+            .forEach((ThrowableMaplet<? extends Throwable, ?> m) ->
                 map.put(
                     m.getThrowableClass(),
                     m.getThrowableTransform()));
         return new ThrowableMap(map);
     }
 
-    public <E extends Throwable> String map(E serviceException) {
+    public <E extends Throwable, R> R map(E serviceException) {
         @SuppressWarnings("unchecked")
-        Function<E, String> transformer
-            = (Function<E, String>) map.get(serviceException.getClass());
+        Function<E, R> transformer
+            = (Function<E, R>) map.get(serviceException.getClass());
         if (transformer == null)
             throw new IllegalStateException(serviceException);
         return transformer.apply(serviceException);
