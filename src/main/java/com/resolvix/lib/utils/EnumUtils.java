@@ -1,5 +1,7 @@
 package com.resolvix.lib.utils;
 
+import java.util.function.Function;
+
 public class EnumUtils {
 
     public EnumUtils() {
@@ -16,5 +18,11 @@ public class EnumUtils {
         if (e == null)
             return null;
         return e.ordinal();
+    }
+
+    public static <E extends Enum<E>, R> R safeMap(E e, Function<E, R> map) {
+        if (e == null)
+            return null;
+        return map.apply(e);
     }
 }

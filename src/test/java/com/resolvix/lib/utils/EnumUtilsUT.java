@@ -20,7 +20,9 @@ public class EnumUtilsUT {
 
     @Test
     public void safeNameWhenEnumIsNotNull() {
-        assertThat(EnumUtils.safeName(SampleEnum.SAMPLE_ENUM_VALUE), equalTo("SAMPLE_ENUM_VALUE"));
+        assertThat(EnumUtils.safeName(
+            SampleEnum.SAMPLE_ENUM_VALUE),
+            equalTo("SAMPLE_ENUM_VALUE"));
     }
 
     @Test
@@ -28,7 +30,26 @@ public class EnumUtilsUT {
         assertThat(EnumUtils.safeOrdinal(null), nullValue());
     }
 
+    @Test
     public void safeOrdinalWhenEnumIsNotNull() {
-        assertThat(EnumUtils.safeOrdinal(SampleEnum.SAMPLE_ENUM_VALUE), equalTo(0));
+        assertThat(EnumUtils.safeOrdinal(
+            SampleEnum.SAMPLE_ENUM_VALUE),
+            equalTo(0));
+    }
+
+    private static String getName(SampleEnum sampleEnum) {
+        return sampleEnum.name();
+    }
+
+    @Test
+    public void safeMapWhenEnumIsNull() {
+        assertThat(EnumUtils.safeMap(null, EnumUtilsUT::getName), nullValue());
+    }
+
+    @Test
+    public void safeMapWhenEnumIsNotNull() {
+        assertThat(EnumUtils.safeMap(
+            SampleEnum.SAMPLE_ENUM_VALUE, EnumUtilsUT::getName),
+            equalTo("SAMPLE_ENUM_VALUE"));
     }
 }
