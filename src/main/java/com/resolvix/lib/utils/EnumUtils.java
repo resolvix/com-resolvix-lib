@@ -4,7 +4,7 @@ import java.util.function.Function;
 
 public class EnumUtils {
 
-    public EnumUtils() {
+    private EnumUtils() {
         //
     }
 
