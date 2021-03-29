@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.resolvix</groupId>
         <artifactId>com-resolvix-parent-pom</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>0.0.2</version>
     </parent>
 
     <artifactId>com-resolvix-lib</artifactId>
@@ -19,6 +19,17 @@
     <properties>
 
     </properties>
+
+    <distributionManagement>
+        <repository>
+            <id>${release-repository.id}</id>
+            <url>${release-repository.url}</url>
+        </repository>
+        <snapshotRepository>
+            <id>${snapshot-repository.id}</id>
+            <url>${snapshot-repository.url}</url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <dependencies>
 
@@ -48,9 +59,34 @@
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-reflect</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-module-junit4</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
 
     </build>
+
+    <scm>
+      <connection>scm:git:ssh://git@github.com:resolvix/com-resolvix-lib.git</connection>
+      <url>scm:git:https://github.com/resolvix/com-resolvix-lib.git</url>
+      <developerConnection>scm:git:https://github.com/resolvix/com-resolvix-lib.git</developerConnection>
+      <tag>HEAD</tag>
+    </scm>
 </project>

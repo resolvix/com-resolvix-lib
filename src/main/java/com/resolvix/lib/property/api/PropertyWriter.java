@@ -43,7 +43,6 @@ public interface PropertyWriter<P> {
      * class or entity instance.
      *
      * @param id the property identifier
-     * @param <T> the property value type
      */
-    <T> void unsetProperty(P id);
+    void unsetProperty(P id);
 }

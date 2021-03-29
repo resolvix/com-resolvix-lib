@@ -3,7 +3,13 @@ package com.resolvix.lib.utils;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import java.time.*;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.GregorianCalendar;
 import java.util.function.Function;
 
@@ -109,6 +115,20 @@ public class DateTimeUtils {
             xmlGregorianCalendar.setMillisecond(
                 localTime.getNano() / NO_OF_NANOSECONDS_PER_MILLISECOND);
         }
+    }
+
+    private static void setTime(
+        XMLGregorianCalendar xmlGregorianCalendar, LocalTime localTime, boolean includeMilliseconds) {
+        assert localTime != null;
+
+        xmlGregorianCalendar.setTime(
+            localTime.getHour(), localTime.getMinute(), localTime.getSecond());
+        if (!includeMilliseconds)
+            return;
+
+        int milliseconds = localTime.getNano() / NO_OF_NANOSECONDS_PER_MILLISECOND;
+        xmlGregorianCalendar.setFractionalSecond(
+            BigDecimal.valueOf(milliseconds, 3));
     }
 
     private static void setOffset(
