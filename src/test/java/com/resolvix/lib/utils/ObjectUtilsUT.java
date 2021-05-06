@@ -13,16 +13,44 @@ public class ObjectUtilsUT {
     }
 
     @Test
-    public void safeGivenNullValue() {
+    public void safe1GivenNullValue() {
         assertThat(
             ObjectUtils.safe(null, ObjectUtilsUT::addOne),
             nullValue());
     }
 
     @Test
-    public void safeGivenNonNullValue() {
+    public void safe1GivenNonNullValue() {
         assertThat(
             ObjectUtils.safe(Integer.valueOf(1), ObjectUtilsUT::addOne),
             equalTo(Integer.valueOf(2)));
+    }
+
+    @Test
+    public void safe2GivenNullValue() {
+        assertThat(
+            ObjectUtils.safe(null, ObjectUtilsUT::addOne, ObjectUtilsUT::addOne),
+            nullValue());
+    }
+
+    @Test
+    public void safe2GivenNonNullValueAndFunctionProducingNullValue() {
+        assertThat(
+            ObjectUtils.safe(Integer.valueOf(1), (Integer i) -> null, ObjectUtilsUT::addOne),
+            nullValue());
+    }
+
+    @Test
+    public void safe2GivenNonNullValueAndFunctionProducingNonNullValueAndFunctionProducingNullValue() {
+        assertThat(
+            ObjectUtils.safe(Integer.valueOf(1), ObjectUtilsUT::addOne, (Integer i) -> null),
+            nullValue());
+    }
+
+    @Test
+    public void safe2GivenNonNullValueAndFunctionProducingNonNullValueAndFunctionProductingNonNullValue() {
+        assertThat(
+            ObjectUtils.safe(Integer.valueOf(1), ObjectUtilsUT::addOne, ObjectUtilsUT::addOne),
+            equalTo(Integer.valueOf(3)));
     }
 }
