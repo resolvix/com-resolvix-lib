@@ -48,4 +48,46 @@ public class ObjectUtils {
             return null;
         return secondFunction.apply(t);
     }
+
+    /**
+     * Determines the equality of two values, one or both of which may be
+     * {@code null}.
+     *
+     * @param leftT the left operand
+     * @param rightT the right operand
+     * @param <T> the operand type
+     * @return true, if the left operand and the right operand are equal;
+     *  false, otherwise
+     */
+    public static <T> boolean safeEquals(T leftT, T rightT) {
+        if (leftT == null && rightT == null)
+            return true;
+
+        if (leftT == null)
+            return false;
+
+        return leftT.equals(rightT);
+    }
+
+    /**
+     * Determines the equality of two values, the de-referenced operands,
+     * obtained by de-referencing the left and right operands, one or both of
+     * which may be null.
+     *
+     * @param leftT the left operand
+     * @param rightT the right operand
+     * @param fn the de-referencing function
+     * @param <T> the operand type
+     * @param <U> the de-referenced operand type
+     * @return
+     */
+    public static <T, U> boolean safeDereferenceEquals(T leftT, T rightT, Function<T, U> fn) {
+        if (fn == null)
+            throw new AssertionError("fn must not be null");
+
+        if (leftT == null && rightT == null)
+            return true;
+
+        return (leftT != null && rightT != null && safeEquals(fn.apply(leftT), fn.apply(rightT)));
+    }
 }
