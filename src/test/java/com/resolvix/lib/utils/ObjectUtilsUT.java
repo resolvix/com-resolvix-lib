@@ -4,6 +4,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -77,6 +78,50 @@ public class ObjectUtilsUT {
         assertThat(
             ObjectUtils.safe(Integer.valueOf(1), ObjectUtilsUT::addOne, ObjectUtilsUT::addOne),
             equalTo(Integer.valueOf(3)));
+    }
+
+    //
+    //  safeContentsEquals/2
+    //
+
+    @Test
+    public void safeContentsEquals2GivenNullOperands() {
+        assertTrue(
+            ObjectUtils.safeContentsEquals(null, null));
+    }
+
+    @Test
+    public void safeContentsEquals2GivenNullLeftOperandNonNullRightOperand() {
+        assertFalse(
+            ObjectUtils.safeContentsEquals(null, Arrays.asList("A", "B", "C")));
+    }
+
+    @Test
+    public void safeContentsEquals2GivenNonNullLeftOperandNullRightOperand() {
+        assertFalse(
+            ObjectUtils.safeContentsEquals(Arrays.asList("A", "B", "C"), null));
+    }
+
+    @Test
+    public void safeContentsEquals2GivenNonNullEqualOperands() {
+        assertTrue(
+            ObjectUtils.safeContentsEquals(Arrays.asList("A", "B", "C"), Arrays.asList("A", "B", "C")));
+    }
+
+    @Test
+    public void safeContentsEquals2GivenUnequalLengthOperands() {
+        assertFalse(
+            ObjectUtils.safeContentsEquals(Arrays.asList("A", "B", "C"), Arrays.asList("A", "B")));
+        assertFalse(
+            ObjectUtils.safeContentsEquals(Arrays.asList("A", "B"), Arrays.asList("A", "B", "C")));
+    }
+
+    @Test
+    public void safeContentsEquals2GivenUnequalOperands() {
+        assertFalse(
+            ObjectUtils.safeContentsEquals(Arrays.asList("A", "B", "C"), Arrays.asList("D", "E", "F")));
+        assertFalse(
+            ObjectUtils.safeContentsEquals(Arrays.asList("D", "E", "F"), Arrays.asList("A", "B", "C")));
     }
 
     //
