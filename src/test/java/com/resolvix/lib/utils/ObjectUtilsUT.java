@@ -31,6 +31,31 @@ public class ObjectUtilsUT {
     public ExpectedException thrown = ExpectedException.none();
 
     //
+    //  calculateHashcode/n
+    //
+
+    @Test
+    public void calculateHashCodeGivenEmptyParameterList() {
+        assertThat(
+            ObjectUtils.calculateHashcode(),
+            equalTo(0));
+    }
+
+    @Test
+    public void calculateHashCodeGivenOneNonNullParameter() {
+        assertThat(
+            ObjectUtils.calculateHashcode("ABC"),
+            equalTo("ABC".hashCode()));
+    }
+
+    @Test
+    public void calculateHashCodeGivenTwoNonNullParameters() {
+        assertThat(
+            ObjectUtils.calculateHashcode("ABC", "DEF"),
+            equalTo("ABC".hashCode() + 31 * "DEF".hashCode()));
+    }
+
+    //
     //  safe/1
     //
 
@@ -85,43 +110,43 @@ public class ObjectUtilsUT {
     //
 
     @Test
-    public void safeContentsEquals2GivenNullOperands() {
+    public void safeEqualsIterable2GivenNullOperands() {
         assertTrue(
-            ObjectUtils.safeContentsEquals(null, null));
+            ObjectUtils.safeEquals((Iterable<Void>) null, (Iterable<Void>) null));
     }
 
     @Test
-    public void safeContentsEquals2GivenNullLeftOperandNonNullRightOperand() {
+    public void safeEqualsIterable2GivenNullLeftOperandNonNullRightOperand() {
         assertFalse(
-            ObjectUtils.safeContentsEquals(null, Arrays.asList("A", "B", "C")));
+            ObjectUtils.safeEquals(null, Arrays.asList("A", "B", "C")));
     }
 
     @Test
-    public void safeContentsEquals2GivenNonNullLeftOperandNullRightOperand() {
+    public void safeEqualsIterable2GivenNonNullLeftOperandNullRightOperand() {
         assertFalse(
-            ObjectUtils.safeContentsEquals(Arrays.asList("A", "B", "C"), null));
+            ObjectUtils.safeEquals(Arrays.asList("A", "B", "C"), null));
     }
 
     @Test
-    public void safeContentsEquals2GivenNonNullEqualOperands() {
+    public void safeEqualsIterable2GivenNonNullEqualOperands() {
         assertTrue(
-            ObjectUtils.safeContentsEquals(Arrays.asList("A", "B", "C"), Arrays.asList("A", "B", "C")));
+            ObjectUtils.safeEquals(Arrays.asList("A", "B", "C"), Arrays.asList("A", "B", "C")));
     }
 
     @Test
-    public void safeContentsEquals2GivenUnequalLengthOperands() {
+    public void safeEqualsIterable2GivenUnequalLengthOperands() {
         assertFalse(
-            ObjectUtils.safeContentsEquals(Arrays.asList("A", "B", "C"), Arrays.asList("A", "B")));
+            ObjectUtils.safeEquals(Arrays.asList("A", "B", "C"), Arrays.asList("A", "B")));
         assertFalse(
-            ObjectUtils.safeContentsEquals(Arrays.asList("A", "B"), Arrays.asList("A", "B", "C")));
+            ObjectUtils.safeEquals(Arrays.asList("A", "B"), Arrays.asList("A", "B", "C")));
     }
 
     @Test
-    public void safeContentsEquals2GivenUnequalOperands() {
+    public void safeEqualsIterable2GivenUnequalOperands() {
         assertFalse(
-            ObjectUtils.safeContentsEquals(Arrays.asList("A", "B", "C"), Arrays.asList("D", "E", "F")));
+            ObjectUtils.safeEquals(Arrays.asList("A", "B", "C"), Arrays.asList("D", "E", "F")));
         assertFalse(
-            ObjectUtils.safeContentsEquals(Arrays.asList("D", "E", "F"), Arrays.asList("A", "B", "C")));
+            ObjectUtils.safeEquals(Arrays.asList("D", "E", "F"), Arrays.asList("A", "B", "C")));
     }
 
     //

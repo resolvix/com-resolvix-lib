@@ -10,6 +10,23 @@ public class ObjectUtils {
     }
 
     /**
+     * Calculates a hash
+     *
+     * @param args
+     * @return
+     */
+    public static int calculateHashcode(Object... args) {
+        int hashCode = 0;
+        int multipier = 1;
+        for (Object arg : args) {
+            if (arg != null)
+                hashCode += multipier * arg.hashCode();
+            multipier *= 31;
+        }
+        return hashCode;
+    }
+
+    /**
      * Returns the output of a given function applied to a given value,
      * unless the given value is null.
      *
@@ -48,38 +65,6 @@ public class ObjectUtils {
         if (t == null)
             return null;
         return secondFunction.apply(t);
-    }
-
-    /**
-     * Determines the equality of two iterable data structure operands, where
-     * {@code left} is equal to {@code right} if the iterable data structures
-     * -
-     *
-     *  (1) are of the same length; and
-     *  (2) contain elements that are equal in the same order.
-     *
-     * @param left the left operand
-     * @param right the right operand
-     * @param <T> the type of element contained in each iterable data structure
-     * @return true, if the iterable data structures are equal; false,
-     *  otherwise
-     */
-    public static <T> boolean safeContentsEquals(Iterable<T> left, Iterable<T> right) {
-        if (left == right)
-            return true;
-
-        if (left == null || right == null)
-            return false;
-
-        Iterator<T> itLeft = left.iterator();
-        Iterator<T> itRight = right.iterator();
-        do {
-            if (!(itLeft.hasNext() && itRight.hasNext()))
-                return !(itLeft.hasNext() || itRight.hasNext());
-
-            if (!safeEquals(itLeft.next(), itRight.next()))
-                return false;
-        } while (true);
     }
 
     /**
@@ -124,5 +109,47 @@ public class ObjectUtils {
             return false;
 
         return leftT.equals(rightT);
+    }
+
+    /**
+     * Determines the equality of two iterable data structure operands, where
+     * {@code left} is equal to {@code right} if the iterable data structures
+     * -
+     *
+     *  (1) are of the same length; and
+     *  (2) contain elements that are equal in the same order.
+     *
+     * @param left the left operand
+     * @param right the right operand
+     * @param <T> the type of element contained in each iterable data structure
+     * @return true, if the iterable data structures are equal; false,
+     *  otherwise
+     */
+    public static <T> boolean safeEquals(Iterable<T> left, Iterable<T> right) {
+        if (left == right)
+            return true;
+
+        if (left == null || right == null)
+            return false;
+
+        Iterator<T> itLeft = left.iterator();
+        Iterator<T> itRight = right.iterator();
+        do {
+            if (!(itLeft.hasNext() && itRight.hasNext()))
+                return !(itLeft.hasNext() || itRight.hasNext());
+
+            if (!safeEquals(itLeft.next(), itRight.next()))
+                return false;
+        } while (true);
+    }
+
+    /**
+     *
+     * @param t
+     * @param <T>
+     * @return
+     */
+    public static <T> ToStringBuilder toString(T t) {
+        return new ToStringBuilder(t);
     }
 }
