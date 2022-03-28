@@ -1,5 +1,6 @@
 package com.resolvix.lib.utils;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -42,6 +43,7 @@ public class CryptoUtilsUT {
     }
 
     @Test
+    @Ignore
     public void toDigest() throws Exception {
         expectedException.expect(IllegalStateException.class);
         Whitebox.invokeMethod(
