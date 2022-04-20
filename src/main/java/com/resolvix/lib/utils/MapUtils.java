@@ -1,5 +1,7 @@
 package com.resolvix.lib.utils;
 
+import org.checkerframework.checker.units.qual.K;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -11,7 +13,7 @@ public class MapUtils {
         //
     }
 
-    public static <K, V extends Enum<V>> Map<K, V> toMap(
+    public static <K, V> Map<K, V> toMap(
         Supplier<Map<K, V>> mapSupplier, V[] vs, Function<? super V, K> keyFunction) {
         Map<K, V> m = mapSupplier.get();
         for (V v : vs)
@@ -19,7 +21,7 @@ public class MapUtils {
         return m;
     }
 
-    public static <K, V extends Enum<V>> Map<K, V> toMap(
+    public static <K, V> Map<K, V> toMap(
         V[] vs, Function<? super V, K> keyFunction) {
         return toMap(HashMap::new, vs, keyFunction);
     }
