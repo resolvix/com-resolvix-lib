@@ -35,11 +35,6 @@
 
         <!-- Project dependencies -->
 
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-        </dependency>
-
         <!-- Unit and integration test dependencies -->
 
         <dependency>

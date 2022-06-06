@@ -1,8 +1,8 @@
 package com.resolvix.lib.dependency.impl;
 
-import com.google.common.collect.Maps;
 import com.resolvix.lib.dependency.api.CyclicDependencyException;
 import com.resolvix.lib.dependency.api.DependencyNotFoundException;
+import com.resolvix.lib.utils.MapUtils;
 
 import java.lang.reflect.Array;
 import java.util.*;
@@ -93,7 +93,7 @@ public class GenericDependencyResolver {
             .collect(Collectors.toList());
 
         Map<K, ObjectReference<K, T>> map
-            = Maps.uniqueIndex(objectReferences, ObjectReference::getK);
+            = MapUtils.toMap(objectReferences, ObjectReference::getK);
 
         LocalDependencyResolver<K, T> localDependencyResolver
             = new LocalDependencyResolver<>(map);

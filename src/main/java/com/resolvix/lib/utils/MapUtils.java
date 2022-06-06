@@ -1,8 +1,7 @@
 package com.resolvix.lib.utils;
 
-import org.checkerframework.checker.units.qual.K;
-
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -23,6 +22,19 @@ public class MapUtils {
 
     public static <K, V> Map<K, V> toMap(
         V[] vs, Function<? super V, K> keyFunction) {
+        return toMap(HashMap::new, vs, keyFunction);
+    }
+
+    public static <K, V> Map<K, V> toMap(
+        Supplier<Map<K, V>> mapSupplier, List<V> vs, Function<? super V, K> keyFunction) {
+        Map<K, V> m = mapSupplier.get();
+        for (V v : vs)
+            m.put(keyFunction.apply(v), v);
+        return m;
+    }
+
+    public static <K, V> Map<K, V> toMap(
+        List<V> vs, Function<? super V, K> keyFunction) {
         return toMap(HashMap::new, vs, keyFunction);
     }
 }
