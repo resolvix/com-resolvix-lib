@@ -37,10 +37,10 @@ public class ConfigurationProperties {
 
     private static ValuePatternParser[] valuePatternParsers
             = new ValuePatternParser[] {
-                    new ValuePatternParser(ASSOCIATIVE_ARRAY_PATTERN, ConfigurationProperties::parseAssociativeArray),
-                    new ValuePatternParser(ARRAY_PATTERN, ConfigurationProperties::parseArray),
-                    new ValuePatternParser(ENCRYPTED_STRING_PATTERN, ConfigurationProperties::parseEncryptedString),
-                    new ValuePatternParser(STRING_PATTERN, ConfigurationProperties::parseString) };
+                    new ValuePatternParser((String s) -> ASSOCIATIVE_ARRAY_PATTERN.matcher(s).matches(), ConfigurationProperties::parseAssociativeArray),
+                    new ValuePatternParser((String s) -> ARRAY_PATTERN.matcher(s).matches(), ConfigurationProperties::parseArray),
+                    new ValuePatternParser((String s) -> ENCRYPTED_STRING_PATTERN.matcher(s).matches(), ConfigurationProperties::parseEncryptedString),
+                    new ValuePatternParser((String s) -> STRING_PATTERN.matcher(s).matches(), ConfigurationProperties::parseString) };
 
     private Map<String, Object> map;
 
@@ -79,7 +79,7 @@ public class ConfigurationProperties {
             return (String) null;
 
         for (ValuePatternParser valuePatternParser : valuePatternParsers)
-            if (valuePatternParser.getPattern().matcher(trimmedS).matches())
+            if (valuePatternParser.applyTest(trimmedS))
                 return valuePatternParser.getParser().apply(trimmedS);
 
         throw new IllegalStateException();

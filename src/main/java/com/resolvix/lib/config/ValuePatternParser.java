@@ -5,18 +5,18 @@ import java.util.regex.Pattern;
 
 public class ValuePatternParser {
 
-    private Pattern pattern;
+    private Function<String, Boolean> test;
 
     private Function<String, Object> parser;
 
     public ValuePatternParser(
-            Pattern pattern, Function<String, Object> parser) {
-        this.pattern = pattern;
+            Function<String, Boolean> test, Function<String, Object> parser) {
+        this.test = test;
         this.parser = parser;
     }
 
-    public Pattern getPattern() {
-        return pattern;
+    public Boolean applyTest(String s) {
+        return test.apply(s);
     }
 
     public Function<String, Object> getParser() {
