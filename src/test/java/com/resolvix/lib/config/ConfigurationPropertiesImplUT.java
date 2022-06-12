@@ -10,19 +10,19 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-public class ConfigurationPropertiesUT {
+public class ConfigurationPropertiesImplUT {
 
-    public static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationPropertiesUT.class);
+    public static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationPropertiesImplUT.class);
 
     @Test
     public void openPropertiesFile() throws IOException, NullPointerException {
-        InputStream inputStream = ConfigurationPropertiesUT.class.getResourceAsStream(
+        InputStream inputStream = ConfigurationPropertiesImplUT.class.getResourceAsStream(
                 "configurationPropertiesUT.properties");
         LOGGER.debug("inputStream: {}", inputStream);
         inputStream.mark(4096);
         String configurationProperties = InputStreamUtils.toString(inputStream, StandardCharsets.UTF_8);
         inputStream.reset();
-        ConfigurationProperties cp = ConfigurationProperties.parse(inputStream);
+        ConfigurationPropertiesImpl cp = ConfigurationPropertiesImpl.parse(inputStream);
         inputStream.close();
         LOGGER.debug("openPropertiesFile: {}", configurationProperties);
         Map<String, Object> map = cp.getMap();

@@ -1,5 +1,7 @@
 package com.resolvix.lib.config;
 
+import com.resolvix.lib.config.api.ConfigurationProperties;
+
 import java.io.*;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -12,10 +14,12 @@ import java.util.regex.Pattern;
  *
  * load properties, represent encrypted values, represent array values,
  * represent associate lists, support a hierarchy of configuration
- * properties.
+ * properties; support property interpolation.
  *
  */
-public class ConfigurationProperties {
+public class ConfigurationPropertiesImpl
+    implements ConfigurationProperties
+{
 
     private static String EMPTY_STRING = "";
 
@@ -35,16 +39,21 @@ public class ConfigurationProperties {
 
     private static Pattern ASSOCIATIVE_ARRAY_PATTERN = Pattern.compile(ASSOCIATIVE_ARRAY_REGEX);
 
+    private static String INTERPOLATED_VALUE_PLACEHOLDER_REGEX = "\\$\\{([a-zA-Z].*)\\}";
+
+    private static Pattern INTERPOLATED_VALUE_PLACEHOLDER_PATTERN
+            = Pattern.compile(INTERPOLATED_VALUE_PLACEHOLDER_REGEX);
+
     private static ValuePatternParser[] valuePatternParsers
             = new ValuePatternParser[] {
-                    new ValuePatternParser((String s) -> ASSOCIATIVE_ARRAY_PATTERN.matcher(s).matches(), ConfigurationProperties::parseAssociativeArray),
-                    new ValuePatternParser((String s) -> ARRAY_PATTERN.matcher(s).matches(), ConfigurationProperties::parseArray),
-                    new ValuePatternParser((String s) -> ENCRYPTED_STRING_PATTERN.matcher(s).matches(), ConfigurationProperties::parseEncryptedString),
-                    new ValuePatternParser((String s) -> STRING_PATTERN.matcher(s).matches(), ConfigurationProperties::parseString) };
+                    new ValuePatternParser((String s) -> ASSOCIATIVE_ARRAY_PATTERN.matcher(s).matches(), ConfigurationPropertiesImpl::parseAssociativeArray),
+                    new ValuePatternParser((String s) -> ARRAY_PATTERN.matcher(s).matches(), ConfigurationPropertiesImpl::parseArray),
+                    new ValuePatternParser((String s) -> ENCRYPTED_STRING_PATTERN.matcher(s).matches(), ConfigurationPropertiesImpl::parseEncryptedString),
+                    new ValuePatternParser((String s) -> STRING_PATTERN.matcher(s).matches(), ConfigurationPropertiesImpl::parseString) };
 
     private Map<String, Object> map;
 
-    private ConfigurationProperties(Map<String, Object> map) {
+    private ConfigurationPropertiesImpl(Map<String, Object> map) {
         this.map = map;
     }
 
@@ -86,7 +95,7 @@ public class ConfigurationProperties {
     }
 
 
-    public static ConfigurationProperties parse(InputStream inputStream)
+    public static ConfigurationPropertiesImpl parse(InputStream inputStream)
         throws IOException
     {
         Properties properties = new Properties();
@@ -99,10 +108,20 @@ public class ConfigurationProperties {
             map.put(key.toString(), parseValue(value.toString()));
         }
 
-        return new ConfigurationProperties(map);
+        return new ConfigurationPropertiesImpl(map);
     }
 
     public Map<String, Object> getMap() {
         return map;
+    }
+
+    @Override
+    public <T> T get(String name) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public <T> T get(String name, T defaultValue) {
+        throw new UnsupportedOperationException();
     }
 }
