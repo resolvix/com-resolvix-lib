@@ -1,19 +1,18 @@
 package com.resolvix.lib.config;
 
-import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-public class ScalarValueParserImplUT {
+public class OrdinayValueParserImplUT {
 
-    ScalarValueParserImpl parser;
+    OrdinaryValueParserImpl parser;
 
     @Before
     public void before() {
-        this.parser = new ScalarValueParserImpl();
+        this.parser = new OrdinaryValueParserImpl();
     }
 
     //

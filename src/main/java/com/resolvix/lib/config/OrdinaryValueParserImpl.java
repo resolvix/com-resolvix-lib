@@ -2,7 +2,7 @@ package com.resolvix.lib.config;
 
 import java.text.DecimalFormatSymbols;
 
-class ScalarValueParserImpl
+class OrdinaryValueParserImpl
     extends BaseValueParserImpl<String>
     implements ValueParser<String>
 {
