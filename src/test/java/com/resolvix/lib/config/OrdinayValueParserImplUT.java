@@ -45,6 +45,20 @@ public class OrdinayValueParserImplUT {
     }
 
     @Test
+    public void testUndelimitedStringContainingEncryptedValue() {
+        assertThat(
+                parser.parse("ENC(<encrypted.value>)"),
+                equalTo("ENC(<encrypted.value>)"));
+    }
+
+    @Test
+    public void testUndelimitedStringContainingInterpolatedValuePlaceholder() {
+        assertThat(
+                parser.parse("${interpolated.value}"),
+                equalTo("${interpolated.value}"));
+    }
+
+    @Test
     public void testUndelimitedStringBeginningWithIntegerNumber() {
         assertThat(
                 parser.parse("12345 IntegerNumber"),

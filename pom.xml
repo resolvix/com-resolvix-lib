@@ -83,6 +83,20 @@
             <artifactId>powermock-module-junit4</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <!--
+
+            Test artifacts to enable comparative review of functionality
+            provided by similar or comparable libraries.
+
+        -->
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-configuration2</artifactId>
+            <version>2.7</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
