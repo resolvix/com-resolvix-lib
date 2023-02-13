@@ -99,7 +99,7 @@ public class LensTest {
     }
 
     private <T> Matcher<T> ofTypeAndValue(Class<T> classT, T t) {
-        return both(isA(classT)).and(equalTo(t));
+        return (Matcher<T>) both(isA(classT)).and(equalTo(t));
     }
 
     @Test
