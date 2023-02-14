@@ -1,14 +1,13 @@
 package com.resolvix.lib.transform;
 
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
-
-import java.util.Optional;
 
 import static com.spotify.hamcrest.optional.OptionalMatchers.emptyOptional;
 import static com.spotify.hamcrest.optional.OptionalMatchers.optionalWithValue;
-import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThrows;
 
 public class TransformUT {
@@ -114,16 +113,16 @@ public class TransformUT {
     }
 
     @Test
-    public void optionalTransformGivenTransformableValue() {
+    public void transformToOptionalGivenTransformableValue() {
         assertThat(
-            PLUS_FIVE_TRANSFORM.optionalTransform(InputValues.FOUR),
+            PLUS_FIVE_TRANSFORM.transformToOptional(InputValues.FOUR),
             is(optionalWithValue(OutputValues.NINE)));
     }
 
     @Test
-    public void optionalTransformGivenNonTransformableValue() {
+    public void transformToOptionalGivenNonTransformableValue() {
         assertThat(
-            PLUS_FIVE_TRANSFORM.optionalTransform(InputValues.FIVE),
+            PLUS_FIVE_TRANSFORM.transformToOptional(InputValues.FIVE),
             is(emptyOptional()));
     }
 }

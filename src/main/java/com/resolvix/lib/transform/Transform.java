@@ -64,7 +64,7 @@ public interface Transform<I, O> {
      *  {@link Optional<O>} containing the transformed input object;
      *  if transformation is not possible, {@code Optional.EMPTY}
      */
-    default Optional<O> optionalTransform(I input) {
+    default Optional<O> transformToOptional(I input) {
         return Optional.ofNullable(transform(input));
     }
 }
