@@ -1,7 +1,7 @@
 package com.resolvix.lib.utils;
 
-import com.resolvix.lib.util.CheckedBiFunction;
-import com.resolvix.lib.util.CheckedFunction;
+import com.resolvix.lib.util.function.CheckedBiFunction;
+import com.resolvix.lib.util.function.CheckedFunction;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;

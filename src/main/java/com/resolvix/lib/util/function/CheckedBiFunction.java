@@ -1,4 +1,4 @@
-package com.resolvix.lib.util;
+package com.resolvix.lib.util.function;
 
 /**
  * Defines an interface for a function accepting two values in the domain
