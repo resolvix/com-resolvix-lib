@@ -4,22 +4,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class CheckedExceptionConsumingBiFunctionSupplier<
+public class CheckedExceptionEmittingBiFunctionSupplier<
     I, J, O, E extends Exception>
     implements Supplier<BiFunction<I, J, Optional<O>>>
 {
 
-    private List<E> es;
-
     private CheckedBiFunction<I, J, O, E> checkedBiFunction;
 
-    public CheckedExceptionConsumingBiFunctionSupplier(
-        CheckedBiFunction<I, J, O, E> checkedBiFunction) {
+    private TriConsumer<I, J, E> emissionConsumer;
+
+    public CheckedExceptionEmittingBiFunctionSupplier(
+        CheckedBiFunction<I, J, O, E> checkedBiFunction,
+        TriConsumer<I, J, E> emissionConsumer) {
         super();
-        this.es = new ArrayList<>();
         this.checkedBiFunction = checkedBiFunction;
+        this.emissionConsumer = emissionConsumer;
     }
 
     @Override
@@ -28,13 +30,9 @@ public class CheckedExceptionConsumingBiFunctionSupplier<
             try {
                 return Optional.of(checkedBiFunction.apply(i, j));
             } catch (Exception e) {
-                es.add((E) e);
+                emissionConsumer.accept(i, j, (E) e);
                 return Optional.empty();
             }
         };
-    }
-
-    public List<E> getExceptions() {
-        return es;
     }
 }

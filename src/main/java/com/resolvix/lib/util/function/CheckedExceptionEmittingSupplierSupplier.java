@@ -3,20 +3,24 @@ package com.resolvix.lib.util.function;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class CheckedExceptionConsumingSupplierSupplier<O, E extends Exception>
+public class CheckedExceptionEmittingSupplierSupplier<
+    O, E extends Exception>
     implements Supplier<Supplier<Optional<O>>>
 {
 
-    private List<E> es;
-
     private CheckedSupplier<O, E> checkedSupplier;
 
-    public CheckedExceptionConsumingSupplierSupplier(CheckedSupplier<O, E> checkedSupplier) {
+    private Consumer<E> emissionConsumer;
+
+    public CheckedExceptionEmittingSupplierSupplier(
+        CheckedSupplier<O, E> checkedSupplier,
+        Consumer<E> emissionConsumer) {
         super();
-        this.es = new ArrayList<>();
         this.checkedSupplier = checkedSupplier;
+        this.emissionConsumer = emissionConsumer;
     }
 
     @Override
@@ -25,13 +29,9 @@ public class CheckedExceptionConsumingSupplierSupplier<O, E extends Exception>
             try {
                 return Optional.of(checkedSupplier.get());
             } catch (Exception e) {
-                es.add((E) e);
+                emissionConsumer.accept((E) e);
                 return Optional.empty();
             }
         };
-    }
-
-    public List<E> getExceptions() {
-        return es;
     }
 }

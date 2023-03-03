@@ -2,16 +2,21 @@ package com.resolvix.lib.util.function;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.*;
 
-public class CheckedExceptionConsumingSupplierSupplierUT {
+public class CheckedExceptionEmittingSupplierSupplierUT {
 
     private static class LocalDivideByThreeException
         extends Exception
@@ -21,13 +26,17 @@ public class CheckedExceptionConsumingSupplierSupplierUT {
         }
     }
 
-    private CheckedExceptionConsumingSupplierSupplier<
-        Boolean, LocalDivideByThreeException>
-        supplierSupplier;
+    @Mock
+    private Consumer<LocalDivideByThreeException> checkedExceptionConsumer;
 
     private int i = 0;
 
-    private Boolean getI() throws LocalDivideByThreeException {
+    private CheckedExceptionEmittingSupplierSupplier<
+        Boolean,
+        LocalDivideByThreeException>
+        supplierSupplier;
+
+    public Boolean getI() throws LocalDivideByThreeException {
         if (i != 0 && i % 3 == 0)
             throw new LocalDivideByThreeException();
 
@@ -36,8 +45,9 @@ public class CheckedExceptionConsumingSupplierSupplierUT {
 
     @Before
     public void before() {
-        supplierSupplier = new CheckedExceptionConsumingSupplierSupplier<>(
-            this::getI);
+        MockitoAnnotations.initMocks(this);
+        supplierSupplier = new CheckedExceptionEmittingSupplierSupplier<>(
+            this::getI, checkedExceptionConsumer);
     }
 
     @Test
@@ -56,7 +66,7 @@ public class CheckedExceptionConsumingSupplierSupplierUT {
         assertTrue(thirdOptionalValue.isPresent());
         assertThat(thirdOptionalValue.get(), equalTo(true));
 
-        assertThat(supplierSupplier.getExceptions().size(), equalTo(0));
+        verifyZeroInteractions(checkedExceptionConsumer);
     }
 
     @Test
@@ -76,10 +86,11 @@ public class CheckedExceptionConsumingSupplierSupplierUT {
         assertTrue(thirdOptionalValue.isPresent());
         assertThat(thirdOptionalValue.get(), equalTo(true));
 
-        assertThat(supplierSupplier.getExceptions().size(), equalTo(0));
+        verifyZeroInteractions(checkedExceptionConsumer);
 
         Optional<Boolean> fourthOptionalValue = supplier.get();
-        assertFalse(fourthOptionalValue.isPresent());
-        assertThat(supplierSupplier.getExceptions().size(), equalTo(1));
+
+        verify(checkedExceptionConsumer).accept(any(LocalDivideByThreeException.class));
+        verifyNoMoreInteractions(checkedExceptionConsumer);
     }
 }
