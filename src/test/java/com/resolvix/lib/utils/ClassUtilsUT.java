@@ -7,19 +7,51 @@ import static org.hamcrest.Matchers.*;
 
 public class ClassUtilsUT {
 
-    private static class LocalClass {
+    private interface A {
+
+        Boolean getBoolean();
+
+        void setBoolean(Boolean value);
+    }
+
+    private static class B
+        implements A
+    {
 
         private Boolean value;
 
-        LocalClass() {
-            this.value = false;
+        B() {
+            this.value = Boolean.FALSE;
         }
 
-        boolean getBoolean() {
+        @Override
+        public Boolean getBoolean() {
             return value;
         }
 
-        void setBoolean(Boolean value) {
+        @Override
+        public void setBoolean(Boolean value) {
+            this.value = value;
+        }
+    }
+
+    private static class C
+        implements A
+    {
+
+        private Boolean value;
+
+        C() {
+            this.value = Boolean.TRUE;
+        }
+
+        @Override
+        public Boolean getBoolean() {
+            return value;
+        }
+
+        @Override
+        public void setBoolean(Boolean value) {
             this.value = value;
         }
     }
@@ -28,8 +60,8 @@ public class ClassUtilsUT {
     public void testInstantiateClass()
         throws Exception
     {
-        LocalClass localClass = ClassUtils.instantiateClass(LocalClass.class);
-        assertThat(localClass, isA(LocalClass.class));
+        A a = ClassUtils.instantiateClass(B.class);
+        assertThat(a, isA(B.class));
     }
 
     @Test
@@ -37,10 +69,10 @@ public class ClassUtilsUT {
         throws Exception
     {
         @SuppressWarnings("unchecked")
-        LocalClass[] localClasses = ClassUtils.instantiateClasses(
-            (Class<LocalClass>[]) new Class[] {LocalClass.class, LocalClass.class}, LocalClass.class);
-        assertThat(localClasses[0], isA(LocalClass.class));
-        assertThat(localClasses[1], isA(LocalClass.class));
-        assertThat(localClasses[0], not(sameInstance(localClasses[1])));
+        A[] as = ClassUtils.instantiateClasses(
+            new Class[] { B.class, C.class}, A.class);
+        assertThat(as[0], isA(B.class));
+        assertThat(as[1], isA(C.class));
+        assertThat(as[0], not(sameInstance(as[1])));
     }
 }
