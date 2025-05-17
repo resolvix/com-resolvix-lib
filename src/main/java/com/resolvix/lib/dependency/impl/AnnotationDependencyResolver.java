@@ -46,7 +46,7 @@ public class AnnotationDependencyResolver {
     @SafeVarargs
     public static <A extends Annotation, T> Class<? extends T>[] resolveDependencies(
         Class<A> classA,
-        Class<T> classT,
+        Class<? super T> classT,
         Function<A, Class<? extends T>[]> getDependencies,
         Class<? extends T>... classes
     ) throws CyclicDependencyException,
