@@ -20,7 +20,7 @@ public class ClassUtilsUT {
 
         private Boolean value;
 
-        B() {
+        public B() {
             this.value = Boolean.FALSE;
         }
 
@@ -41,7 +41,7 @@ public class ClassUtilsUT {
 
         private Boolean value;
 
-        C() {
+        public C() {
             this.value = Boolean.TRUE;
         }
 
