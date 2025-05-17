@@ -101,7 +101,7 @@ public class DependencyResolver {
      */
     public static <A extends Annotation, T> Class<? extends T>[] resolveDependencies(
         Class<A> classA,
-        Class<T> classT,
+        Class<? super T> classT,
         Function<A, Class<? extends T>[]> getDependencies,
         Class<? extends T>... ts
     ) throws CyclicDependencyException,
