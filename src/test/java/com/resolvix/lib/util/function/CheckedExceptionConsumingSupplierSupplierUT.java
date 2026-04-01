@@ -8,6 +8,8 @@ import java.util.function.Supplier;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class CheckedExceptionConsumingSupplierSupplierUT {
 
@@ -19,29 +21,23 @@ public class CheckedExceptionConsumingSupplierSupplierUT {
         }
     }
 
-    private static class LocalCheckedSupplier
-        implements CheckedSupplier<Boolean, LocalDivideByThreeException>
-    {
-
-        private int i = 0;
-
-        @Override
-        public Boolean get() throws LocalDivideByThreeException {
-            if (i != 0 && i % 3 == 0)
-                throw new LocalDivideByThreeException();
-
-            return Boolean.valueOf(i++ % 3 == 2);
-        }
-    }
-
     private CheckedExceptionConsumingSupplierSupplier<
-        Boolean, LocalDivideByThreeException, LocalCheckedSupplier>
+        Boolean, LocalDivideByThreeException>
         supplierSupplier;
+
+    private int i = 0;
+
+    private Boolean getI() throws LocalDivideByThreeException {
+        if (i != 0 && i % 3 == 0)
+            throw new LocalDivideByThreeException();
+
+        return Boolean.valueOf(i++ % 3 == 2);
+    }
 
     @Before
     public void before() {
         supplierSupplier = new CheckedExceptionConsumingSupplierSupplier<>(
-            new LocalCheckedSupplier());
+            this::getI);
     }
 
     @Test
@@ -49,15 +45,15 @@ public class CheckedExceptionConsumingSupplierSupplierUT {
         Supplier<Optional<Boolean>> supplier
             = supplierSupplier.get();
         Optional<Boolean> firstOptionalValue = supplier.get();
-        assertThat(firstOptionalValue.isPresent(), equalTo(true));
+        assertTrue(firstOptionalValue.isPresent());
         assertThat(firstOptionalValue.get(), equalTo(false));
 
         Optional<Boolean> secondOptionalValue = supplier.get();
-        assertThat(secondOptionalValue.isPresent(), equalTo(true));
+        assertTrue(secondOptionalValue.isPresent());
         assertThat(secondOptionalValue.get(), equalTo(false));
 
         Optional<Boolean> thirdOptionalValue = supplier.get();
-        assertThat(thirdOptionalValue.isPresent(), equalTo(true));
+        assertTrue(thirdOptionalValue.isPresent());
         assertThat(thirdOptionalValue.get(), equalTo(true));
 
         assertThat(supplierSupplier.getExceptions().size(), equalTo(0));
@@ -67,22 +63,23 @@ public class CheckedExceptionConsumingSupplierSupplierUT {
     public void suppliedSupplierGeneratesOneException() {
         Supplier<Optional<Boolean>> supplier
             = supplierSupplier.get();
+
         Optional<Boolean> firstOptionalValue = supplier.get();
-        assertThat(firstOptionalValue.isPresent(), equalTo(true));
+        assertTrue(firstOptionalValue.isPresent());
         assertThat(firstOptionalValue.get(), equalTo(false));
 
         Optional<Boolean> secondOptionalValue = supplier.get();
-        assertThat(secondOptionalValue.isPresent(), equalTo(true));
+        assertTrue(secondOptionalValue.isPresent());
         assertThat(secondOptionalValue.get(), equalTo(false));
 
         Optional<Boolean> thirdOptionalValue = supplier.get();
-        assertThat(thirdOptionalValue.isPresent(), equalTo(true));
+        assertTrue(thirdOptionalValue.isPresent());
         assertThat(thirdOptionalValue.get(), equalTo(true));
 
         assertThat(supplierSupplier.getExceptions().size(), equalTo(0));
 
         Optional<Boolean> fourthOptionalValue = supplier.get();
-        assertThat(fourthOptionalValue.isPresent(), equalTo(false));
+        assertFalse(fourthOptionalValue.isPresent());
         assertThat(supplierSupplier.getExceptions().size(), equalTo(1));
     }
 }

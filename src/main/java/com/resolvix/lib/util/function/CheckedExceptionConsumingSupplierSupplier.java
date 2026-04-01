@@ -5,15 +5,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-public class CheckedExceptionConsumingSupplierSupplier<O, E extends Exception, S extends CheckedSupplier<O, E>>
+public class CheckedExceptionConsumingSupplierSupplier<O, E extends Exception>
     implements Supplier<Supplier<Optional<O>>>
 {
 
     private List<E> es;
 
-    private S checkedSupplier;
+    private CheckedSupplier<O, E> checkedSupplier;
 
-    public CheckedExceptionConsumingSupplierSupplier(S checkedSupplier) {
+    public CheckedExceptionConsumingSupplierSupplier(CheckedSupplier<O, E> checkedSupplier) {
         super();
         this.es = new ArrayList<>();
         this.checkedSupplier = checkedSupplier;

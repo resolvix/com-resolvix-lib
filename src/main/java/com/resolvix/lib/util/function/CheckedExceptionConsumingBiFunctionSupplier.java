@@ -6,15 +6,17 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
-public class CheckedExceptionConsumingBiFunctionSupplier<I, J, O, E extends Exception, F extends CheckedBiFunction<I, J, O, E>>
+public class CheckedExceptionConsumingBiFunctionSupplier<
+    I, J, O, E extends Exception>
     implements Supplier<BiFunction<I, J, Optional<O>>>
 {
 
     private List<E> es;
 
-    private F checkedBiFunction;
+    private CheckedBiFunction<I, J, O, E> checkedBiFunction;
 
-    public CheckedExceptionConsumingBiFunctionSupplier(F checkedBiFunction) {
+    public CheckedExceptionConsumingBiFunctionSupplier(
+        CheckedBiFunction<I, J, O, E> checkedBiFunction) {
         super();
         this.es = new ArrayList<>();
         this.checkedBiFunction = checkedBiFunction;

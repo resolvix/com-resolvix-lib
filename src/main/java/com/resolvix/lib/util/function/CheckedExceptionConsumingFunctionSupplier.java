@@ -6,18 +6,20 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class CheckedExceptionConsumingFunctionSupplier<I, O, E extends Exception, F extends CheckedFunction<I, O, E>>
+public class CheckedExceptionConsumingFunctionSupplier<I, O, E extends Exception>
     implements Supplier<Function<I, Optional<O>>>
 {
 
     private List<E> es;
 
-    private F checkedFunction;
+    private CheckedFunction<I, O, E> checkedFunction;
 
-    public CheckedExceptionConsumingFunctionSupplier(F checkedFunction) {
+    public CheckedExceptionConsumingFunctionSupplier(
+        CheckedFunction<I, O, E> checkedFunction)
+    {
         super();
         this.es = new ArrayList<>();
-        this.checkedFunction = this.checkedFunction;
+        this.checkedFunction = checkedFunction;
     }
 
     @Override
