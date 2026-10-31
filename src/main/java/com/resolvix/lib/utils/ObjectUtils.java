@@ -1,11 +1,50 @@
 package com.resolvix.lib.utils;
 
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class ObjectUtils {
 
     private ObjectUtils() {
         //
+    }
+
+    /**
+     * Returns the first non-null value in a given list of values.
+     *
+     * @param values the values
+     * @param <T> the value type
+     * @return the first non-null value in the given list of values, null,
+     *  if all values are null
+     */
+    public static <T> T coalesce(T... values) {
+        if (values == null)
+            return null;
+
+        for (T value : values)
+            if (value != null)
+                return value;
+        return null;
+    }
+
+    /**
+     * Returns null if the value satisfies the predicate, otherwise
+     * returns the given value.
+     *
+     * @param value the value
+     * @param predicate the predicate
+     * @param <T> the value type
+     * @return null if the given value satisfies the given predicate,
+     *  otherwise returns the given value
+     * @throws IllegalArgumentException if the predicate is null
+     */
+    public static <T> T nullIf(T value, Predicate<T> predicate) {
+        if (predicate == null)
+            throw new IllegalArgumentException("predicate is null");
+
+        if (value == null || predicate.test(value))
+            return null;
+        return value;
     }
 
     /**
